@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "EU AI Act for AI Agent Developers — A Practical Compliance Checklist"
+title: "EU AI Act for AI Agent Developers: A Practical Compliance Checklist"
 date: 2026-04-10 09:00:00 +0000
 categories: [compliance, eu-ai-act]
 tags: [eu-ai-act, agent-governance, microsoft, compliance, python]
@@ -62,17 +62,23 @@ description: >-
 .t-bold { color: #ffffff; font-weight: bold; }
 </style>
 
-**August 2, 2026 is fewer than four months away.** That is when EU AI Act obligations for high-risk AI systems — and the transparency requirements of Article 50 — become enforceable. If you are building AI agents, you need to know whether your system is in scope, what you are required to do, and how to get there without starting from scratch.
+**August 2, 2026 is fewer than four months away.** That is when EU AI Act obligations for high-risk AI systems (including the transparency requirements of Article 50) become enforceable. If you are building AI agents, you need to know whether your system is in scope, what you are required to do, and how to get there without starting from scratch.
 
 Before the checklist, one thing needs to be said clearly: **your model passing safety benchmarks does not make your agent compliant.**
 
-Model safety and agent governance are different layers. Model safety focuses on what a model *generates* — training-time alignment, content filtering, red-teaming results. Agent governance focuses on what a system *executes* — runtime decisions, tool calls, audit records, and disclosure to users and deployers. The EU AI Act governs the execution layer. Your RLHF fine-tune and your toxicity filter say nothing about your audit trail, your risk management process, or your transparency disclosures.
+Model safety and agent governance are different layers. Model safety focuses on what a model *generates*: training-time alignment, content filtering, red-teaming results. Agent governance focuses on what a system *executes*: runtime decisions, tool calls, audit records, and disclosure to users and deployers. AGT addresses the execution layer of compliance; the Act itself reaches much further, into documentation, data governance, transparency, instructions for use, monitoring, and organisational measures. Your RLHF fine-tune and your toxicity filter say nothing about your audit trail, your risk management process, or your transparency disclosures.
 
-This checklist uses **[Microsoft's Agent Governance Toolkit](https://github.com/microsoft/agent-governance-toolkit)** (AGT) as the practical tooling reference. We will use an **HR screening agent** as our running example — an agent that parses CVs, scores candidates, and generates shortlists for a hiring workflow.
+This checklist uses **[Microsoft's Agent Governance Toolkit](https://github.com/microsoft/agent-governance-toolkit)** (AGT) as the practical tooling reference. We will use an **HR screening agent** as our running example: an agent that parses CVs, scores candidates, and generates shortlists for a hiring workflow.
 
 ```bash
-pip install agent-governance-toolkit agentmesh agent-sre
+# Full toolkit in one step
+pip install "agent-governance-toolkit[full]"
+
+# Or install individual packages
+pip install agent-os-kernel agentmesh-platform agentmesh-runtime agent-sre
 ```
+
+> **Package naming warning:** On PyPI, the bare `agentmesh` package is an unrelated 2024 placeholder, not Microsoft's AgentMesh. Use `agentmesh-platform` for the AgentMesh component. Verify all package names against the [repository's installation guide](https://github.com/microsoft/agent-governance-toolkit) before running in a production environment.
 
 ### How the toolkit maps to the law
 
@@ -103,16 +109,16 @@ Not every AI agent triggers the full obligation stack. The Act creates a risk hi
 
 **High-risk AI systems** (Annex III) face the heaviest obligations. These are systems operating in eight domains: biometrics, critical infrastructure, education, employment, essential services (credit scoring, healthcare, emergency triage), law enforcement, migration/border control, and justice/democracy.
 
-**Limited-risk systems** — AI that interacts with users without falling in Annex III — face only Article 50 transparency obligations.
+**Limited-risk systems** (AI that interacts with users without falling in Annex III) face only Article 50 transparency obligations.
 
 <pre class="mermaid">
 flowchart TD
     A["Your AI Agent"] --> B{"Operates in an\nAnnex III domain?"}
     B -->|No| C["Limited Risk\nArt. 50 transparency only"]
     B -->|Yes| D{"Profiles\nnatural persons?"}
-    D -->|Yes| E["HIGH RISK\nFull Arts. 9–15 obligations"]
+    D -->|Yes| E["HIGH RISK\nFull Arts. 9 to 15 obligations"]
     D -->|No| F{"Art. 6(3) exemption\napplies?"}
-    F -->|Yes — narrow procedural task| G["Not high-risk\nArt. 50 still applies"]
+    F -->|Yes: narrow procedural task| G["Not high-risk\nArt. 50 still applies"]
     F -->|No| E
     style E fill:#f8d7da,stroke:#dc3545
     style C fill:#d4edda,stroke:#28a745
@@ -146,22 +152,22 @@ print(result.triggers)
 # ['annex_iii_domain_employment', 'involves_profiling']
 ```
 
-Notice `profiling_override=True`. The Act has a hard rule: **any AI system that profiles natural persons is always high-risk**, regardless of the Article 6(3) exemptions. Article 6(3) lets some Annex III systems escape the high-risk classification if they perform only narrow procedural or preparatory tasks — but that exemption explicitly does not apply to systems that profile people (cross-referenced to GDPR Article 4(4)). An agent that evaluates CV content, infers competencies, and ranks candidates is profiling.
+Notice `profiling_override=True`. For systems that already fall within an Annex III use case, involving profiling of natural persons blocks the Article 6(3) exemption. That exemption lets some Annex III systems escape the high-risk classification when they perform only narrow procedural or preparatory tasks, but it explicitly does not apply once profiling is in scope (cross-referenced to GDPR Article 4(4)). An agent that evaluates CV content, infers competencies, and ranks candidates is profiling within an Annex III domain, which is why `profiling_override` fires here.
 
-> **Gap:** `EUAIActRiskClassifier` currently lives in the toolkit's `examples/` directory, not yet a production library export. Domain sets are static YAML — if the EU updates Annex III, you will need to update your config file manually. Use it as a well-structured starting point, not a certified compliance tool.
+> **Gap:** `EUAIActRiskClassifier` currently lives in the toolkit's `examples/` directory, not yet a production library export. Domain sets are static YAML; if the EU updates Annex III, you will need to update your config file manually. Use it as a well-structured starting point, not a certified compliance tool.
 
-If your agent scores minimal risk, Article 50 (transparency) is your only obligation. The checklist below still applies to any system you want to govern responsibly.
+If your agent scores minimal risk, the remaining checklist items below are optional best practice rather than legal requirements. Note that Article 4 AI literacy obligations entered into application before August 2026 and apply regardless of risk tier: you are already required to ensure your team has appropriate AI literacy for the systems they deploy and use.
 
 ---
 
-## 1. Risk management system — Article 9
+## 1. Risk management system (Article 9)
 
-**What the law requires:** A continuous, iterative risk management process throughout the AI system's lifecycle — not a one-time pre-deployment assessment. You must identify known and foreseeable risks (including under misuse), implement mitigation measures, document residual risks for deployers, and test before market placement. The process must specifically assess impacts on vulnerable populations.
+**What the law requires:** A continuous, iterative risk management process throughout the AI system's lifecycle, not a one-time pre-deployment assessment. You must identify known and foreseeable risks (including under misuse), implement mitigation measures, document residual risks for deployers, and test before market placement. The process must specifically assess impacts on vulnerable populations.
 
 **What the toolkit provides:** The Agent OS policy engine intercepts every tool call and agent action before execution at sub-millisecond latency. Policies are written in YAML, OPA Rego, or Cedar:
 
 ```yaml
-# policy.yaml — require human approval before generating shortlists
+# policy.yaml: require human approval before generating shortlists
 - id: hr-shortlist-human-approval
   description: Block shortlist generation without human sign-off
   scope: ["shortlist_generation"]
@@ -174,13 +180,13 @@ If your agent scores minimal risk, Article 50 (transparency) is your only obliga
 
 Agent SRE adds SLO-based risk containment: when your safety SLI drops below 99% (more than 1% policy violations in the measurement window), agent capabilities are automatically restricted via circuit breaker.
 
-> **Gap:** Article 9 requires *lifecycle* risk management including post-market monitoring. The toolkit handles runtime enforcement well but has no built-in feedback loop from production observation back into your risk policies. You need to build that connection — periodically reviewing audit logs, identifying new failure modes, and updating your policy set. Treat this as a scheduled maintenance task, not a one-time configuration.
+> **Gap:** Article 9 requires *lifecycle* risk management including post-market monitoring. The toolkit handles runtime enforcement well but has no built-in feedback loop from production observation back into your risk policies. You need to build that connection by periodically reviewing audit logs, identifying new failure modes, and updating your policy set. Treat this as a scheduled maintenance task, not a one-time configuration.
 
 ---
 
-## 2. Technical documentation — Article 11 and Annex IV
+## 2. Technical documentation (Article 11 and Annex IV)
 
-**What the law requires:** Technical documentation must be prepared *before* market placement, kept continuously updated, and retained for 10 years. It must contain nine sections specified in Annex IV — covering system description, development process, monitoring, performance metrics, risk management, lifecycle changes, standards applied, declaration of conformity, and post-market monitoring plan. Industry estimates put preparation time at 40–80 hours for a complex system, assuming design decisions were documented from the start.
+**What the law requires:** Technical documentation must be prepared *before* market placement, kept continuously updated, and retained for 10 years. It must contain nine sections specified in Annex IV, covering system description, development process, monitoring, performance metrics, risk management, lifecycle changes, standards applied, declaration of conformity, and post-market monitoring plan. The preparation effort for a complex system is substantial, particularly if design decisions were not documented as the system was built.
 
 **What the toolkit provides:** `TechnicalDocumentationExporter` auto-generates the documentation sections it can infer from your governance artifacts:
 
@@ -206,11 +212,11 @@ print(to_markdown(doc))   # Annex IV dossier, ready for review and filing
 
 Sections 1 through 5 (general description, development process, monitoring, performance metrics, risk management) are auto-populated from toolkit artifacts. Sections 6 through 9 are marked as `placeholder` fields requiring human input.
 
-> **Gap:** Roughly half the Annex IV content cannot be auto-generated. Design rationale, training data provenance (datasheets), third-party evaluation results, and your post-market monitoring plan are things only you can write. Start this documentation *now*, before market placement — the Act requires it to exist before you ship, and the 10-year retention clock starts at that point.
+> **Gap:** Roughly half the Annex IV content cannot be auto-generated. Design rationale, training data provenance (datasheets), third-party evaluation results, and your post-market monitoring plan are things only you can write. Start this documentation *now*, before market placement. The Act requires it to exist before you ship, and the 10-year retention clock starts at that point.
 
 ---
 
-## 3. Record-keeping and logging — Article 12
+## 3. Record-keeping and logging (Article 12)
 
 **What the law requires:** High-risk AI systems must technically allow automatic event recording throughout their lifetime. Logs must support post-market monitoring and risk identification. Deployers must be able to access, collect, store, and interpret them.
 
@@ -218,11 +224,11 @@ Sections 1 through 5 (general description, development process, monitoring, perf
 
 For the HR screening agent, every candidate scoring request, every shortlist generation attempt, every human approval trigger, and every policy violation is recorded with a complete decision trace.
 
-**Action required:** Ensure your deployers can access and export these logs. The toolkit emits structured OpenTelemetry traces and integrates natively with Datadog, Prometheus, Langfuse, and PagerDuty. Wire the audit trail to your logging infrastructure and document how deployers can query it — this forms part of your Article 13 instructions for use.
+**Action required:** Ensure your deployers can access and export these logs. The toolkit emits structured OpenTelemetry traces and integrates natively with Datadog, Prometheus, Langfuse, and PagerDuty. Wire the audit trail to your logging infrastructure and document how deployers can query it. This forms part of your Article 13 instructions for use.
 
 ---
 
-## 4. Transparency to deployers — Article 13
+## 4. Transparency to deployers (Article 13)
 
 **What the law requires:** Systems must be designed to give deployers sufficient transparency to understand and correctly use outputs. Instructions for use must cover: provider identity, performance characteristics and limitations (accuracy levels, known failure modes, input data specifications), human oversight requirements, and log collection guidance.
 
@@ -232,13 +238,13 @@ For the HR screening agent, every candidate scoring request, every shortlist gen
 
 ---
 
-## 5. Human oversight — Article 14
+## 5. Human oversight (Article 14)
 
 **What the law requires:** Systems must include tools enabling effective human oversight. Operators must be able to understand system capabilities, detect automation bias, interpret outputs correctly, choose *not to use* an output, and *interrupt or stop* the system. Requirements scale with the agent's level of autonomy.
 
 **What the toolkit provides:** Three mechanisms cover the Article 14 requirements directly.
 
-**Kill switch** — AgentMesh Runtime includes a system-level kill switch that immediately halts agent execution across all active sessions.
+**Kill switch:** AgentMesh Runtime includes a system-level kill switch that immediately halts agent execution across all active sessions.
 
 **Approval workflows with quorum logic:**
 
@@ -272,15 +278,15 @@ sequenceDiagram
     Note over OS: Art. 12 audit entry logged
 </pre>
 
-**Human-in-the-loop gates** — Capability boundaries that pause execution pending human confirmation before high-stakes actions (contacting candidates, writing to HR systems, making external API calls).
+**Human-in-the-loop gates:** Capability boundaries that pause execution pending human confirmation before high-stakes actions (contacting candidates, writing to HR systems, making external API calls).
 
-> **Gap:** Article 14 requires oversight measures "commensurate with the level of autonomy." As your agent gains new capabilities — new tools, new domains, new integrations — your oversight policies need to be updated to match. The toolkit has no mechanism to flag when a policy set may no longer be adequate for an expanded agent scope. Build a policy review cadence into your release process.
+> **Gap:** Article 14 requires oversight measures "commensurate with the level of autonomy." As your agent gains new capabilities (new tools, new domains, new integrations), your oversight policies need to be updated to match. The toolkit has no mechanism to flag when a policy set may no longer be adequate for an expanded agent scope. Build a policy review cadence into your release process.
 
 ---
 
 ## 6. Accuracy, robustness, and transparency
 
-### Article 15 — Accuracy thresholds
+### Article 15: Accuracy thresholds
 
 `AccuracyDeclaration` lets you formally declare and validate your Article 15 accuracy commitments against live SLI data:
 
@@ -302,11 +308,19 @@ ok, msg = declaration.validate_against_sli("hallucination_rate", 0.08)
 print(ok, msg)   # False "hallucination_rate: 0.08 > 0.05 ✗"
 ```
 
-Wire this into your CI/CD pipeline — a failing threshold should block deployment.
+Wire this into your CI/CD pipeline. A failing threshold should block deployment.
 
-### Article 50 — Transparency for all AI systems
+### Article 50: Transparency for all AI systems
 
-This article applies regardless of risk classification: every AI system interacting with natural persons must (1) disclose it is an AI at first contact and (2) mark AI-generated content in machine-readable format.
+Article 50 covers two separate obligations that apply to different categories of systems. They are not the same duty.
+
+**Article 50(1) applies to interactive systems.** Any AI system intended to interact directly with natural persons must notify the user they are interacting with an AI at first contact, unless this is obvious from the context.
+
+**Article 50(2) applies to generative systems.** Providers of AI systems that generate synthetic audio, image, video, or text must mark that output as artificially generated in a machine-readable format. This obligation applies to the content itself, not to the interaction.
+
+An HR screening agent that converses with candidates owes the first obligation. If it also produces AI-generated written outputs delivered to those candidates, it owes the second as well. Not every interactive system generates synthetic content, and not every generative system interacts directly with people.
+
+The August 2, 2026 enforcement date applies to Article 50 obligations as written in the Act. The Commission's ongoing guidance process continues to develop practical implementation detail, so treat the Act text as the current baseline and monitor delegated acts as they are published.
 
 `TransparencyInterceptor` handles the first obligation:
 
@@ -318,7 +332,7 @@ interceptor = TransparencyInterceptor(
     require_disclosure_confirmation=True,
 )
 
-# At session start — deliver disclosure text and record confirmation
+# At session start: deliver disclosure text and record confirmation
 print(interceptor.get_disclosure_text(TransparencyLevel.ENHANCED))
 # "You are interacting with an AI system governed by policy enforcement rules.
 #  All interactions are logged and subject to human oversight..."
@@ -346,7 +360,7 @@ graph LR
 
 For fully autonomous pipelines where no single agent is clearly "human-facing," this remains an unresolved question in the regulation.
 
-> **Gap:** `TransparencyInterceptor` handles disclosure confirmation and metadata injection but does not implement cryptographic watermarking of generated text (Art. 50(2) machine-readable markers). This requires a separate solution — evaluate C2PA-compatible tools or your LLM provider's native watermarking API.
+> **Gap:** `TransparencyInterceptor` handles disclosure confirmation and metadata injection but does not implement cryptographic watermarking of generated text (Art. 50(2) machine-readable markers). This requires a separate solution: evaluate C2PA-compatible tools or your LLM provider's native watermarking API.
 
 ---
 
@@ -363,11 +377,11 @@ Once the toolkit components are wired up, run a compliance attestation with `age
   </div>
   <pre class="terminal-body"><span class="t-dim">$</span> agent-compliance verify --agent hr-screening-agent
 
-<span class="t-bold">Agent Governance Toolkit — Compliance Report</span>
+<span class="t-bold">Agent Governance Toolkit: Compliance Report</span>
 <span class="t-dim">────────────────────────────────────────────────────</span>
 System:   hr-screening-agent v1.2.0
 Provider: Acme Corp
-Profile:  <span class="t-fail">HIGH RISK</span> (Annex III — Employment, profiling override)
+Profile:  <span class="t-fail">HIGH RISK</span> (Annex III: Employment, profiling override)
 
 <span class="t-bold">Article    Coverage    Conformity Risk   Status</span>
 <span class="t-dim">────────────────────────────────────────────────────</span>
@@ -397,7 +411,7 @@ failures = [
     if f.get('conformity_risk') == 'HIGH' and not f.get('mitigated')
 ]
 if failures:
-    for f in failures: print(f'FAIL: {f[\"article\"]} — {f[\"gap\"]}')
+    for f in failures: print(f'FAIL: {f[\"article\"]}: {f[\"gap\"]}')
     sys.exit(1)
 print('Compliance check passed')
 "
@@ -407,15 +421,15 @@ print('Compliance check passed')
 
 ## What to do with the gaps
 
-Every section above flagged at least one gap. This is expected. The Agent Governance Toolkit provides the runtime governance layer — policy enforcement, audit trails, identity, human oversight — but it was never designed to be a complete EU AI Act compliance solution on its own.
+Every section above flagged at least one gap. This is expected. The Agent Governance Toolkit covers the runtime governance layer (policy enforcement, audit trails, identity, human oversight) but was never designed to be a complete EU AI Act compliance solution on its own.
 
 **Prioritised gap list for an HR screening agent:**
 
-1. **Post-market monitoring feedback loop (Art. 9)** — Schedule quarterly policy reviews using production audit logs. Define what constitutes a risk event that triggers a policy update.
-2. **Annex IV manual sections (Art. 11)** — Write design rationale, training data documentation, and your post-market monitoring plan before you ship. The 10-year clock starts at market placement.
-3. **Content watermarking (Art. 50(2))** — Evaluate C2PA tools or your LLM provider's native watermarking for AI-generated text delivered to candidates.
-4. **AI literacy obligations (Art. 4)** — Train your team on the AI system. Entirely outside the toolkit's scope.
-5. **Data governance (Art. 10)** — Training data practices, bias testing, and dataset governance are not covered by AGT. You need a separate data governance process.
+1. **Post-market monitoring feedback loop (Art. 9):** Schedule quarterly policy reviews using production audit logs. Define what constitutes a risk event that triggers a policy update.
+2. **Annex IV manual sections (Art. 11):** Write design rationale, training data documentation, and your post-market monitoring plan before you ship. The 10-year clock starts at market placement.
+3. **Content watermarking (Art. 50(2)):** Evaluate C2PA tools or your LLM provider's native watermarking for AI-generated text delivered to candidates.
+4. **AI literacy obligations (Art. 4):** Train your team on the AI system. Entirely outside the toolkit's scope, and already in application before August 2026.
+5. **Data governance (Art. 10):** Training data practices, bias testing, and dataset governance are not covered by AGT. You need a separate data governance process.
 
 ---
 
@@ -423,13 +437,13 @@ Every section above flagged at least one gap. This is expected. The Agent Govern
 
 This is the first post in a series on EU AI Act compliance for AI agent developers using Microsoft's Agent Governance Toolkit:
 
-- **Post 2:** [Introducing the Agent Governance Toolkit — architecture and setup](/coming-soon)
+- **Post 2:** [Introducing the Agent Governance Toolkit: architecture and setup](/coming-soon)
 - **Post 3:** [Building your Annex IV dossier with `annex_iv.py`](/coming-soon)
-- **Post 4:** [Article 50 in agentic pipelines — the multi-agent transparency chain problem](/coming-soon)
+- **Post 4:** [Article 50 in agentic pipelines: the multi-agent transparency chain problem](/coming-soon)
 - **Post 5:** [Contributing to Microsoft's open-source governance toolkit](/coming-soon)
 
 The full series lives at [eu-ai-act.ai-mvp.com](https://eu-ai-act.ai-mvp.com).
 
 ---
 
-*This post was written as a contribution to [microsoft/agent-governance-toolkit issue #849](https://github.com/microsoft/agent-governance-toolkit/issues/849). The toolkit is open source under MIT at [github.com/microsoft/agent-governance-toolkit](https://github.com/microsoft/agent-governance-toolkit). The example code in this post references actual source files in the repository — all imports are accurate as of v3.0.0.*
+*This post was written as a contribution to [microsoft/agent-governance-toolkit issue #849](https://github.com/microsoft/agent-governance-toolkit/issues/849). The toolkit is open source under MIT at [github.com/microsoft/agent-governance-toolkit](https://github.com/microsoft/agent-governance-toolkit). The example code references source files in the repository; verify import paths and package names against your installed version, as the toolkit is under active development.*
