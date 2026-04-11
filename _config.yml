@@ -1,32 +1,27 @@
 title: "EU AI Act Guide for AI Agent Developers"
 description: >-
-  Practical compliance for the August 2, 2026 deadline —
-  using Microsoft's Agent Governance Toolkit.
+  Practical compliance for developers building AI agents under the EU AI Act —
+  using Microsoft's open-source Agent Governance Toolkit.
 baseurl: ""
 url: "https://eu-ai-act.ai-mvp.com"
 
-author:
-  name: Carlos Hernandez
-  github: carloshvp
+author: "Carlos Hernandez"
+github_username: carloshvp
+linkedin_username: carloshvp
 
 theme: minima
 
 minima:
   skin: classic
   date_format: "%B %-d, %Y"
-  social_links:
-    - { platform: github, user_url: "https://github.com/carloshvp" }
-    - { platform: linkedin, user_url: "https://linkedin.com/in/carloshvp" }
 
 plugins:
   - jekyll-feed
   - jekyll-seo-tag
   - jekyll-sitemap
 
-# Post URL format: /YYYY/MM/DD/title/
 permalink: /:year/:month/:day/:title/
 
-# Exclude from build
 exclude:
   - Gemfile
   - Gemfile.lock

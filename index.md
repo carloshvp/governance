@@ -1,12 +1,11 @@
 ---
 layout: home
-title: "EU AI Act Guide for AI Agent Developers"
 list_title: "Posts"
 ---
 
-**August 2, 2026.** That is when EU AI Act obligations for high-risk AI systems become enforceable.
+Building AI agents that operate in Europe? This series gives you practical compliance guidance for the EU AI Act — with real code examples using [Microsoft's open-source Agent Governance Toolkit](https://github.com/microsoft/agent-governance-toolkit), honest gap analysis, and no vendor spin.
 
-This series is a practical guide for developers building AI agents — with real code, honest gap analysis, and no vendor spin. Each post uses [Microsoft's open-source Agent Governance Toolkit](https://github.com/microsoft/agent-governance-toolkit) as the tooling reference.
+**Why now?** August 2, 2026 is when high-risk AI system obligations and Article 50 transparency requirements become enforceable. After that date, compliant governance remains a legal requirement — not a one-time checklist.
 
 ---
 
@@ -19,7 +18,3 @@ This series is a practical guide for developers building AI agents — with real
 | 3 | Building Your Annex IV Dossier with `annex_iv.py` | 🔜 Coming soon |
 | 4 | Article 50 in Agentic Pipelines — The Transparency Chain Problem | 🔜 Coming soon |
 | 5 | Contributing to Microsoft's Open-Source Governance Toolkit | 🔜 Coming soon |
-
----
-
-*Contribute or follow the open-source work on [GitHub](https://github.com/carloshvp/agent-governance-toolkit).*

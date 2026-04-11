@@ -9,17 +9,91 @@ description: >-
   EU AI Act deadline, using Microsoft's Agent Governance Toolkit with real code examples.
 ---
 
+<script type="module">
+  import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+  mermaid.initialize({ startOnLoad: true, theme: 'neutral', securityLevel: 'loose' });
+</script>
+
+<style>
+.terminal-window {
+  background: #1e1e1e;
+  border-radius: 8px;
+  margin: 1.5em 0;
+  overflow: hidden;
+  font-size: 0.85em;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+}
+.terminal-header {
+  background: #3a3a3a;
+  padding: 8px 14px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.terminal-dot {
+  width: 12px; height: 12px;
+  border-radius: 50%;
+  display: inline-block;
+}
+.dot-red   { background: #ff5f56; }
+.dot-amber { background: #ffbd2e; }
+.dot-green { background: #27c93f; }
+.terminal-title {
+  color: #999;
+  font-family: monospace;
+  font-size: 0.9em;
+  margin-left: 8px;
+}
+.terminal-body {
+  padding: 16px 20px;
+  color: #d4d4d4;
+  font-family: 'SFMono-Regular', Consolas, monospace;
+  line-height: 1.6;
+  white-space: pre;
+  overflow-x: auto;
+  background: #1e1e1e;
+  margin: 0;
+  border: none;
+}
+.t-ok   { color: #27c93f; }
+.t-warn { color: #ffbd2e; }
+.t-fail { color: #ff5f56; }
+.t-dim  { color: #6a6a6a; }
+.t-bold { color: #ffffff; font-weight: bold; }
+</style>
+
 **August 2, 2026 is fewer than four months away.** That is when EU AI Act obligations for high-risk AI systems — and the transparency requirements of Article 50 — become enforceable. If you are building AI agents, you need to know whether your system is in scope, what you are required to do, and how to get there without starting from scratch.
 
 Before the checklist, one thing needs to be said clearly: **your model passing safety benchmarks does not make your agent compliant.**
 
 Model safety and agent governance are different layers. Model safety focuses on what a model *generates* — training-time alignment, content filtering, red-teaming results. Agent governance focuses on what a system *executes* — runtime decisions, tool calls, audit records, and disclosure to users and deployers. The EU AI Act governs the execution layer. Your RLHF fine-tune and your toxicity filter say nothing about your audit trail, your risk management process, or your transparency disclosures.
 
-This checklist uses **[Microsoft's Agent Governance Toolkit](https://github.com/microsoft/agent-governance-toolkit)** (AGT) as the practical tooling reference. We will use an **HR screening agent** as our running example — an agent that parses CVs, scores candidates, and generates shortlists for a hiring workflow. Install the toolkit first:
+This checklist uses **[Microsoft's Agent Governance Toolkit](https://github.com/microsoft/agent-governance-toolkit)** (AGT) as the practical tooling reference. We will use an **HR screening agent** as our running example — an agent that parses CVs, scores candidates, and generates shortlists for a hiring workflow.
 
 ```bash
 pip install agent-governance-toolkit agentmesh agent-sre
 ```
+
+### How the toolkit maps to the law
+
+Before diving into the checklist, here is how AGT's components align to the articles you need to satisfy:
+
+<pre class="mermaid">
+graph LR
+    subgraph AGT["Agent Governance Toolkit"]
+        OS["Agent OS\nPolicy Engine"]
+        MESH["AgentMesh\nIdentity + Trust"]
+        SRE["Agent SRE\nSLOs + Reliability"]
+        COMP["Agent Compliance\nAttestation CLI"]
+    end
+    OS -->|runtime enforcement| A9["Art. 9\nRisk Mgmt"]
+    OS -->|audit trail| A12["Art. 12\nLogging"]
+    OS -->|kill switch + approvals| A14["Art. 14\nHuman Oversight"]
+    OS -->|disclosure interceptor| A50["Art. 50\nTransparency"]
+    MESH -->|DID identity| A13["Art. 13\nTransparency\nto Deployers"]
+    SRE -->|SLOs + thresholds| A15["Art. 15\nAccuracy"]
+    COMP -->|dossier export| A11["Art. 11\nTech Docs"]
+</pre>
 
 ---
 
@@ -30,6 +104,20 @@ Not every AI agent triggers the full obligation stack. The Act creates a risk hi
 **High-risk AI systems** (Annex III) face the heaviest obligations. These are systems operating in eight domains: biometrics, critical infrastructure, education, employment, essential services (credit scoring, healthcare, emergency triage), law enforcement, migration/border control, and justice/democracy.
 
 **Limited-risk systems** — AI that interacts with users without falling in Annex III — face only Article 50 transparency obligations.
+
+<pre class="mermaid">
+flowchart TD
+    A["Your AI Agent"] --> B{"Operates in an\nAnnex III domain?"}
+    B -->|No| C["Limited Risk\nArt. 50 transparency only"]
+    B -->|Yes| D{"Profiles\nnatural persons?"}
+    D -->|Yes| E["HIGH RISK\nFull Arts. 9–15 obligations"]
+    D -->|No| F{"Art. 6(3) exemption\napplies?"}
+    F -->|Yes — narrow procedural task| G["Not high-risk\nArt. 50 still applies"]
+    F -->|No| E
+    style E fill:#f8d7da,stroke:#dc3545
+    style C fill:#d4edda,stroke:#28a745
+    style G fill:#fff3cd,stroke:#ffc107
+</pre>
 
 Let us classify the HR screening agent using the toolkit's `EUAIActRiskClassifier`:
 
@@ -166,6 +254,24 @@ For the HR screening agent, every candidate scoring request, every shortlist gen
   audit: true
 ```
 
+Here is how that flow looks at runtime when the agent reaches the shortlist delivery step:
+
+<pre class="mermaid">
+sequenceDiagram
+    participant A as HR Screening Agent
+    participant OS as Agent OS
+    participant R1 as Reviewer 1
+    participant R2 as Reviewer 2
+    A->>OS: shortlist_delivery request
+    OS->>OS: Policy check: quorum=2 required
+    OS-->>R1: Approval request sent
+    OS-->>R2: Approval request sent
+    R1->>OS: ✓ Approved
+    R2->>OS: ✓ Approved
+    OS->>A: ✓ Action permitted
+    Note over OS: Art. 12 audit entry logged
+</pre>
+
 **Human-in-the-loop gates** — Capability boundaries that pause execution pending human confirmation before high-stakes actions (contacting candidates, writing to HR systems, making external API calls).
 
 > **Gap:** Article 14 requires oversight measures "commensurate with the level of autonomy." As your agent gains new capabilities — new tools, new domains, new integrations — your oversight policies need to be updated to match. The toolkit has no mechanism to flag when a policy set may no longer be adequate for an expanded agent scope. Build a policy review cadence into your release process.
@@ -225,7 +331,20 @@ result = interceptor.intercept(tool_call_request)
 # result.modified_arguments includes _ai_disclosure metadata marker
 ```
 
-**The multi-agent transparency chain problem:** When your HR agent calls a background enrichment agent, which calls an external data API, Article 50(1) disclosure is still required at the point of human interaction. The Act says the *provider of the human-facing system* is responsible — even if subordinate agents do most of the work. Design your disclosure flow at the outermost human-facing boundary. For fully autonomous pipelines where no single agent is clearly "human-facing," this remains an unresolved question in the regulation.
+**The multi-agent transparency chain problem:** When your HR agent calls a background enrichment agent, which calls an external data API, disclosure ownership becomes ambiguous. The Act says the *provider of the human-facing system* is responsible. Design your disclosure flow at the outermost boundary:
+
+<pre class="mermaid">
+graph LR
+    H["👤 Candidate"] -->|session starts| A["HR Screening Agent\n✓ Art. 50 disclosure here\nTransparencyInterceptor active"]
+    A -->|internal call| B["Enrichment Agent\nno direct human contact\ndisclosure not required"]
+    B -->|API call| C["External\nData Source"]
+    style A fill:#d4edda,stroke:#28a745
+    style B fill:#fff3cd,stroke:#ffc107
+    style H fill:#cce5ff,stroke:#0056b3
+    style C fill:#f8f9fa,stroke:#6c757d
+</pre>
+
+For fully autonomous pipelines where no single agent is clearly "human-facing," this remains an unresolved question in the regulation.
 
 > **Gap:** `TransparencyInterceptor` handles disclosure confirmation and metadata injection but does not implement cryptographic watermarking of generated text (Art. 50(2) machine-readable markers). This requires a separate solution — evaluate C2PA-compatible tools or your LLM provider's native watermarking API.
 
@@ -233,13 +352,41 @@ result = interceptor.intercept(tool_call_request)
 
 ## Running the compliance report
 
-Once the toolkit components are wired up, run a compliance attestation:
+Once the toolkit components are wired up, run a compliance attestation with `agent-compliance verify`:
 
-```bash
-agent-compliance verify --agent hr-screening-agent --json > compliance-report.json
-```
+<div class="terminal-window">
+  <div class="terminal-header">
+    <span class="terminal-dot dot-red"></span>
+    <span class="terminal-dot dot-amber"></span>
+    <span class="terminal-dot dot-green"></span>
+    <span class="terminal-title">agent-compliance verify --agent hr-screening-agent</span>
+  </div>
+  <pre class="terminal-body"><span class="t-dim">$</span> agent-compliance verify --agent hr-screening-agent
 
-The report grades each EU AI Act article with a coverage level and conformity risk rating. Integrate it into CI/CD to fail builds on unmitigated high-risk findings:
+<span class="t-bold">Agent Governance Toolkit — Compliance Report</span>
+<span class="t-dim">────────────────────────────────────────────────────</span>
+System:   hr-screening-agent v1.2.0
+Provider: Acme Corp
+Profile:  <span class="t-fail">HIGH RISK</span> (Annex III — Employment, profiling override)
+
+<span class="t-bold">Article    Coverage    Conformity Risk   Status</span>
+<span class="t-dim">────────────────────────────────────────────────────</span>
+Art. 6     Partial     <span class="t-fail">HIGH</span>              <span class="t-warn">⚠</span>  examples/ only, not library
+Art. 9     Partial     <span class="t-fail">HIGH</span>              <span class="t-warn">⚠</span>  no lifecycle feedback loop
+Art. 11    Partial     MEDIUM            <span class="t-warn">○</span>  manual sections required
+Art. 12    Covered     <span class="t-ok">LOW</span>               <span class="t-ok">✓</span>  full audit trail active
+Art. 13    Partial     MEDIUM            <span class="t-warn">○</span>  instructions for use needed
+Art. 14    Covered     <span class="t-ok">LOW</span>               <span class="t-ok">✓</span>  kill switch + approvals wired
+Art. 15    Partial     MEDIUM            <span class="t-warn">○</span>  thresholds declared, not validated
+Art. 50    Partial     MEDIUM            <span class="t-warn">○</span>  watermarking not configured
+<span class="t-dim">────────────────────────────────────────────────────</span>
+Overall conformity risk: <span class="t-fail">HIGH</span>
+Signed attestation:      <span class="t-dim">sha256:a3f9c2...8d721</span>
+
+<span class="t-dim">Run with --json to pipe output to CI/CD.</span></pre>
+</div>
+
+Integrate into CI/CD to fail builds on unmitigated high-risk findings:
 
 ```bash
 agent-compliance verify --json | python -c "
@@ -250,8 +397,7 @@ failures = [
     if f.get('conformity_risk') == 'HIGH' and not f.get('mitigated')
 ]
 if failures:
-    for f in failures:
-        print(f'FAIL: {f[\"article\"]} — {f[\"gap\"]}')
+    for f in failures: print(f'FAIL: {f[\"article\"]} — {f[\"gap\"]}')
     sys.exit(1)
 print('Compliance check passed')
 "
