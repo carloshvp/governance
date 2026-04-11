@@ -62,7 +62,7 @@ description: >-
 .t-bold { color: #ffffff; font-weight: bold; }
 </style>
 
-**August 2, 2026 is fewer than four months away.** That is when EU AI Act obligations for high-risk AI systems (including the transparency requirements of Article 50) become enforceable. If you are building AI agents, you need to know whether your system is in scope, what you are required to do, and how to get there without starting from scratch.
+**August 2, 2026 is fewer than four months away.** That is when EU AI Act obligations for high-risk AI systems (including the transparency requirements of Article 50) become enforceable. If you are building AI agents, you need to know whether your system is in scope, what you are required to do, and how to get there without starting from scratch. The European Commission's [Navigating the AI Act FAQ](https://digital-strategy.ec.europa.eu/en/faqs/navigating-ai-act) is a good orientation if you are new to the regulation.
 
 Before the checklist, one thing needs to be said clearly: **your model passing safety benchmarks does not make your agent compliant.**
 
@@ -71,7 +71,8 @@ Model safety and agent governance are different layers. Model safety focuses on 
 This checklist uses **[Microsoft's Agent Governance Toolkit](https://github.com/microsoft/agent-governance-toolkit)** (AGT) as the practical tooling reference. We will use an **HR screening agent** as our running example: an agent that parses CVs, scores candidates, and generates shortlists for a hiring workflow.
 
 ```bash
-# Full toolkit in one step
+# Full toolkit in one step (see QUICKSTART.md for detailed setup)
+# https://github.com/microsoft/agent-governance-toolkit/blob/main/QUICKSTART.md
 pip install "agent-governance-toolkit[full]"
 
 # Or install individual packages
@@ -107,7 +108,7 @@ graph LR
 
 Not every AI agent triggers the full obligation stack. The Act creates a risk hierarchy.
 
-**High-risk AI systems** (Annex III) face the heaviest obligations. These are systems operating in eight domains: biometrics, critical infrastructure, education, employment, essential services (credit scoring, healthcare, emergency triage), law enforcement, migration/border control, and justice/democracy.
+**High-risk AI systems** ([Annex III](https://artificialintelligenceact.eu/annex/3/)) face the heaviest obligations. These are systems operating in eight domains: biometrics, critical infrastructure, education, employment, essential services (credit scoring, healthcare, emergency triage), law enforcement, migration/border control, and justice/democracy.
 
 **Limited-risk systems** (AI that interacts with users without falling in Annex III) face only Article 50 transparency obligations.
 
@@ -152,11 +153,11 @@ print(result.triggers)
 # ['annex_iii_domain_employment', 'involves_profiling']
 ```
 
-Notice `profiling_override=True`. For systems that already fall within an Annex III use case, involving profiling of natural persons blocks the Article 6(3) exemption. That exemption lets some Annex III systems escape the high-risk classification when they perform only narrow procedural or preparatory tasks, but it explicitly does not apply once profiling is in scope (cross-referenced to GDPR Article 4(4)). An agent that evaluates CV content, infers competencies, and ranks candidates is profiling within an Annex III domain, which is why `profiling_override` fires here.
+Notice `profiling_override=True`. For systems that already fall within an Annex III use case, involving profiling of natural persons blocks the [Article 6(3) exemption](https://artificialintelligenceact.eu/article/6/). That exemption lets some Annex III systems escape the high-risk classification when they perform only narrow procedural or preparatory tasks, but it explicitly does not apply once profiling is in scope (cross-referenced to GDPR Article 4(4)). An agent that evaluates CV content, infers competencies, and ranks candidates is profiling within an Annex III domain, which is why `profiling_override` fires here.
 
 > **Gap:** `EUAIActRiskClassifier` currently lives in the toolkit's `examples/` directory, not yet a production library export. Domain sets are static YAML; if the EU updates Annex III, you will need to update your config file manually. Use it as a well-structured starting point, not a certified compliance tool.
 
-If your agent scores minimal risk, the remaining checklist items below are optional best practice rather than legal requirements. Note that Article 4 AI literacy obligations entered into application before August 2026 and apply regardless of risk tier: you are already required to ensure your team has appropriate AI literacy for the systems they deploy and use.
+If your agent scores minimal risk, the remaining checklist items below are optional best practice rather than legal requirements. Note that [Article 4 AI literacy obligations](https://digital-strategy.ec.europa.eu/en/faqs/ai-literacy-questions-answers) entered into application before August 2026 and apply regardless of risk tier: you are already required to ensure your team has appropriate AI literacy for the systems they deploy and use.
 
 ---
 
@@ -314,9 +315,9 @@ Wire this into your CI/CD pipeline. A failing threshold should block deployment.
 
 Article 50 covers two separate obligations that apply to different categories of systems. They are not the same duty.
 
-**Article 50(1) applies to interactive systems.** Any AI system intended to interact directly with natural persons must notify the user they are interacting with an AI at first contact, unless this is obvious from the context.
+**Article 50(1) applies to interactive systems.** Any AI system intended to interact directly with natural persons must notify the user they are interacting with an AI at first contact, unless this is obvious from the context. The Commission's [guidelines on transparent AI systems](https://digital-strategy.ec.europa.eu/en/faqs/guidelines-and-code-practice-transparent-ai-systems) explain how this is expected to work in practice.
 
-**Article 50(2) applies to generative systems.** Providers of AI systems that generate synthetic audio, image, video, or text must mark that output as artificially generated in a machine-readable format. This obligation applies to the content itself, not to the interaction.
+**Article 50(2) applies to generative systems.** Providers of AI systems that generate synthetic audio, image, video, or text must mark that output as artificially generated in a machine-readable format. This obligation applies to the content itself, not to the interaction. The Commission's [code of practice on marking AI-generated content](https://digital-strategy.ec.europa.eu/en/policies/code-practice-ai-generated-content) is the voluntary implementation framework currently being developed for this track.
 
 An HR screening agent that converses with candidates owes the first obligation. If it also produces AI-generated written outputs delivered to those candidates, it owes the second as well. Not every interactive system generates synthetic content, and not every generative system interacts directly with people.
 
@@ -428,8 +429,30 @@ Every section above flagged at least one gap. This is expected. The Agent Govern
 1. **Post-market monitoring feedback loop (Art. 9):** Schedule quarterly policy reviews using production audit logs. Define what constitutes a risk event that triggers a policy update.
 2. **Annex IV manual sections (Art. 11):** Write design rationale, training data documentation, and your post-market monitoring plan before you ship. The 10-year clock starts at market placement.
 3. **Content watermarking (Art. 50(2)):** Evaluate C2PA tools or your LLM provider's native watermarking for AI-generated text delivered to candidates.
-4. **AI literacy obligations (Art. 4):** Train your team on the AI system. Entirely outside the toolkit's scope, and already in application before August 2026.
+4. **[AI literacy obligations (Art. 4)](https://digital-strategy.ec.europa.eu/en/faqs/ai-literacy-questions-answers):** Train your team on the AI system. Entirely outside the toolkit's scope, and already in application before August 2026.
 5. **Data governance (Art. 10):** Training data practices, bias testing, and dataset governance are not covered by AGT. You need a separate data governance process.
+
+---
+
+## Further reading
+
+**The law**
+- [EU AI Act — Official text (OJ L 2024/1689)](https://eur-lex.europa.eu/legal-content/EN/TXT/PDF/?uri=OJ%3AL_202401689) — the primary source
+- [Article 6: Classification rules for high-risk AI systems](https://artificialintelligenceact.eu/article/6/) — annotated explainer
+- [Annex III: High-risk AI system categories](https://artificialintelligenceact.eu/annex/3/) — annotated explainer
+
+**European Commission guidance**
+- [Navigating the AI Act FAQ](https://digital-strategy.ec.europa.eu/en/faqs/navigating-ai-act) — scope, high-risk classification, enforcement
+- [Implementation timeline](https://ai-act-service-desk.ec.europa.eu/en/ai-act/timeline/timeline-implementation-eu-ai-act) — phased rollout through August 2027
+- [AI literacy Q&A (Article 4)](https://digital-strategy.ec.europa.eu/en/faqs/ai-literacy-questions-answers) — what the literacy obligation requires in practice
+- [Guidelines on transparent AI systems (Article 50)](https://digital-strategy.ec.europa.eu/en/faqs/guidelines-and-code-practice-transparent-ai-systems) — Art. 50(1) disclosure guidance
+- [Code of practice on marking AI-generated content](https://digital-strategy.ec.europa.eu/en/policies/code-practice-ai-generated-content) — Art. 50(2) machine-readable marking framework
+
+**Microsoft Agent Governance Toolkit**
+- [Repository](https://github.com/microsoft/agent-governance-toolkit)
+- [Quickstart guide](https://github.com/microsoft/agent-governance-toolkit/blob/main/QUICKSTART.md)
+- [Architecture overview](https://github.com/microsoft/agent-governance-toolkit/blob/main/docs/ARCHITECTURE.md)
+- [Threat model](https://github.com/microsoft/agent-governance-toolkit/blob/main/docs/THREAT_MODEL.md)
 
 ---
 
