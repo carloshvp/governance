@@ -16,7 +16,7 @@ Written by [Carlos Hernandez](https://www.linkedin.com/in/carloshvp), founder of
 | # | Post | Status |
 |---|------|--------|
 | 1 | [EU AI Act for AI Agent Developers: A Practical Compliance Checklist](/2026/04/10/eu-ai-act-compliance-checklist-for-ai-agent-developers/) | Published |
-| 2 | From Cloud to Robot: EU AI Act Compliance on Nvidia Platforms for Safety-Critical AI | Coming soon |
+| 2 | From NIM to Jetson: A NeMo Guardrails Configuration Pack for EU AI Act Compliance | Coming soon |
 | 3 | Open Weights, Real Obligations: EU AI Act for GPAI Providers and the Developers Who Deploy Them | Coming soon |
 | 4 | Sovereign AI Infrastructure: EU AI Act Compliance for On-Prem and European Cloud Deployments | Coming soon |
 | 5 | The Contributor Journey: Building the Governance Layer the EU AI Act Requires | Coming soon |

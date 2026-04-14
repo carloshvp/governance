@@ -463,7 +463,7 @@ Every section above flagged at least one gap. This is expected. The Agent Govern
 
 This is the first post in a series on EU AI Act compliance for AI agent developers using Microsoft's Agent Governance Toolkit:
 
-- **Post 2:** From Cloud to Robot: EU AI Act Compliance on Nvidia Platforms for Safety-Critical AI
+- **Post 2:** From NIM to Jetson: A NeMo Guardrails Configuration Pack for EU AI Act Compliance
 - **Post 3:** Open Weights, Real Obligations: EU AI Act for GPAI Providers and the Developers Who Deploy Them
 - **Post 4:** Sovereign AI Infrastructure: EU AI Act Compliance for On-Prem and European Cloud Deployments
 - **Post 5:** The Contributor Journey: Building the Governance Layer the EU AI Act Requires
