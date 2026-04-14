@@ -464,8 +464,8 @@ Every section above flagged at least one gap. This is expected. The Agent Govern
 This is the first post in a series on EU AI Act compliance for AI agent developers using Microsoft's Agent Governance Toolkit:
 
 - **Post 2:** From Cloud to Robot: EU AI Act Compliance on Nvidia Platforms for Safety-Critical AI
-- **Post 3:** GPAI and Foundation Models: What Providers Must Do Before August 2026
-- **Post 4:** Safety-Critical AI Agents: EU AI Act for Robotics and Physical Systems
+- **Post 3:** Open Weights, Real Obligations: EU AI Act for GPAI Providers and the Developers Who Deploy Them
+- **Post 4:** Sovereign AI Infrastructure: EU AI Act Compliance for On-Prem and European Cloud Deployments
 - **Post 5:** The Contributor Journey: Building the Governance Layer the EU AI Act Requires
 
 The full series lives at [eu-ai-act.ai-mvp.com](https://eu-ai-act.ai-mvp.com).
