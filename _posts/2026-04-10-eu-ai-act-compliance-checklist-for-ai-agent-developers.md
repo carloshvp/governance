@@ -463,10 +463,10 @@ Every section above flagged at least one gap. This is expected. The Agent Govern
 
 This is the first post in a series on EU AI Act compliance for AI agent developers using Microsoft's Agent Governance Toolkit:
 
-- **Post 2:** [Introducing the Agent Governance Toolkit: architecture and setup](/coming-soon)
-- **Post 3:** [Building your Annex IV dossier with `annex_iv.py`](/coming-soon)
-- **Post 4:** [Article 50 in agentic pipelines: the multi-agent transparency chain problem](/coming-soon)
-- **Post 5:** [Contributing to Microsoft's open-source governance toolkit](/coming-soon)
+- **Post 2:** GPAI and Foundation Models: What Providers Must Do Before August 2026
+- **Post 3:** Governance at the Inference Layer: Wiring AGT Into NIM and vLLM
+- **Post 4:** Safety-Critical AI Agents: EU AI Act for Robotics and Physical Systems
+- **Post 5:** The Contributor Journey: Building the Governance Layer the EU AI Act Requires
 
 The full series lives at [eu-ai-act.ai-mvp.com](https://eu-ai-act.ai-mvp.com).
 
