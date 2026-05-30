@@ -463,11 +463,12 @@ Every section above flagged at least one gap. This is expected. The Agent Govern
 
 This is the first post in a series on practical AI governance for AI agent developers using Microsoft's Agent Governance Toolkit and related open-source primitives:
 
-- **Post 2:** [How to Run Coding Agents Safely in the Enterprise](/2026/05/28/coding-agents-safely/) — reference architecture for adopting Codex, Claude Code, Copilot, and Cursor without burning your secrets, your IP, or your audit story
-- **Post 3:** From NIM to Jetson: A NeMo Guardrails Configuration Pack for EU AI Act Compliance
-- **Post 4:** Open Weights, Real Obligations: EU AI Act for GPAI Providers and the Developers Who Deploy Them
-- **Post 5:** Sovereign AI Infrastructure: EU AI Act Compliance for On-Prem and European Cloud Deployments
-- **Post 6:** The Contributor Journey: Building the Governance Layer the EU AI Act Requires
+- **Post 2:** [How to Run Coding Agents Safely in the Enterprise](/2026/05/28/coding-agents-safely/), a reference architecture for adopting Codex, Claude Code, Copilot, and Cursor without burning your secrets, your IP, or your audit story
+- **Post 3:** From NIM to Jetson: A NeMo Guardrails Configuration Pack for Production Inference
+- **Post 4:** Open Weights, Real Obligations: Governing GPAI Models You Deploy but Didn't Train
+- **Post 5:** Sovereign AI Infrastructure: Governance Patterns for On-Prem and European Cloud
+- **Post 6:** The Contributor Journey: Building an Open-Source Agent Governance Layer
+- **Post 7:** Governing Agents That Touch the Physical World: Runtime Controls for Embodied AI
 
 The full series lives at [governance.ai-mvp.com](https://governance.ai-mvp.com).
 
