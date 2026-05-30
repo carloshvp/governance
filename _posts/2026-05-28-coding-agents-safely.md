@@ -49,7 +49,7 @@ Traditional AppSec assumes that source code is mostly written by humans and that
 
 - Read your repo, your dotfiles, and any document a developer drops into the context window.
 - Decide which shell commands to run, then run them.
-- Call MCP servers, GitHub APIs, package managers, and the open internet.
+- Call MCP (Model Context Protocol) servers, GitHub APIs, package managers, and the open internet.
 - Generate code that gets committed, often under a developer's identity rather than the agent's.
 
 Read that list again and you will notice it is Simon Willison's [lethal trifecta](https://simonwillison.net/2025/Jun/16/the-lethal-trifecta/) in its purest form. Willison's argument is that an AI agent becomes dangerous the moment it combines three capabilities: access to private data, exposure to untrusted content, and the ability to communicate externally. Any one or two are survivable; all three together mean a successful prompt injection can read your secrets and send them somewhere you cannot see. A coding agent has all three by default, not as an edge case. It reads your private repo and dotfiles (private data); it ingests issue text, dependency READMEs, MCP tool output, and any web page you point it at (untrusted content); and it runs shell commands, calls package managers, and reaches the open internet (external communication). The trifecta is not a configuration mistake you can avoid here. It is the job description. That is why the controls later in this post are mostly about pulling the three capabilities apart, which is exactly what NVIDIA's Jensen Huang rule (control #4) states as a design principle.
@@ -159,21 +159,77 @@ If any one boundary fails open, the others contain the blast radius. This is the
 
 You can ship these in order, and you should not ship the next one until the previous one is enforced (not just documented).
 
-1. **Block free tiers on managed devices.** No coding agent on a personal account in a corporate network. SSO + SCIM + MDM + DLP. The shadow-AI ceiling here is real: SAP's 2025 data and the Microsoft and LinkedIn Work Trend Index both put unauthorized AI-tool usage at 78% of knowledge workers.
+A few acronyms recur below, so here they are once: **SSO** (single sign-on), **SCIM** (System for Cross-domain Identity Management, the standard that auto-provisions and, more importantly, auto-deprovisions accounts when someone leaves), **MDM** (mobile device management, the tooling that pushes locked configuration to every company laptop, such as Jamf or Microsoft Intune), **DLP** (data loss prevention), **SIEM** (security information and event management, your central log-and-alert system such as Splunk or Microsoft Sentinel), **SLO** (service-level objective), **SBOM** (software bill of materials), **OPA** (Open Policy Agent), **RAG** (retrieval-augmented generation), **A2A** (agent-to-agent), **UDS** (Unix domain socket), and **microVM** (a lightweight, hardware-isolated virtual machine).
+
+1. **Block free tiers on managed devices.** No coding agent on a personal account in a corporate network. Concretely, four moves stop shadow usage: (a) require **SSO** against the vendor's enterprise tenant so a personal login cannot reach company repositories; (b) wire **SCIM** so that when someone leaves, their agent access is revoked automatically with the rest of their accounts; (c) use **MDM** to push an application allowlist that blocks the consumer installers on company laptops (personal Cursor, Copilot Individual, a `codex` CLI signed into a personal account); and (d) add a **DLP** or network rule that blocks the consumer API endpoints so a blocked app cannot simply phone home from a personal key. The shadow-AI ceiling here is real: SAP's 2025 data and the Microsoft and LinkedIn Work Trend Index both put unauthorized AI-tool usage at 78% of knowledge workers.
 
 2. **MDM-deploy managed settings** for every coding agent in use. For Codex, that is `requirements.toml`. For Claude Code, `managed-settings.json` plus the OS-level policy paths. For Cursor, the Enterprise plan's MDM policies. For Copilot, organization policies in github.com.
 
 3. **Default to read-only or workspace-write, never `bypassPermissions` / `danger-full-access` / "YOLO."** When you need full access, run inside a disposable container or microVM.
 
-4. **Egress allowlist at the agent level.** Domain allow/deny/approve, not just an HTTP proxy. Codex's bubblewrap + UDS bridge is the reference design.
+4. **Egress allowlist at the agent level.** Domain allow/deny/approve, not just an HTTP proxy. In practice: run the agent behind an egress proxy that permits only the domains a build actually needs (your package registry, your Git host, your model API endpoint) and denies everything else by default. Codex ships this as its managed network policy; for Claude Code, set `allowedDomains` on the Bash sandbox; for Cursor and Copilot, which do not ship an agent-level egress filter, enforce the allowlist at the OS firewall (a per-process `pf`/`iptables` rule, or a tool such as `mitmproxy` or Squid in allowlist mode). Codex's bubblewrap + UDS (Unix domain socket) bridge, where the sandbox runs with `--unshare-net` and all traffic is routed through an internal proxy that checks the domain, is the reference design to copy.
 
    > **The Jensen Huang rule.** NVIDIA's CEO has argued repeatedly that an agent should not be allowed three capabilities at the same time: access to sensitive information, code execution, and external communication. This is the [lethal trifecta](https://simonwillison.net/2025/Jun/16/the-lethal-trifecta/) from the start of this post, stated as a design rule rather than a threat. Willison names the dangerous middle leg as exposure to untrusted content; Huang names it as code execution; for a coding agent both are always present, so the prescription is the same. The combination is what turns a prompt-injection success into a data-exfiltration incident. In practice this means: separate the agent that reads your inbox from the agent that runs shell commands from the agent that calls external APIs. Compose them through a governance layer, not through shared credentials. For most enterprise coding-agent setups today, this is the single architectural decision with the highest leverage.
 
 5. **Secret broker, never `.env`. And separate identities for the agent.** Short-lived, scoped credentials issued by Vault, AWS Secrets Manager, or an equivalent. Agents authenticate to a broker; the broker decides whether to mint a token. Codex Cloud handles cloud secrets exactly this way: available during setup, removed before agent execution. A second, complementary pattern from Maxim Vovshin's GenAI Gurus walkthrough is worth stealing wholesale. Rather than giving an agent access to your personal Gmail, give the agent its own Gmail account, set up Gmail's auto-forward to relay relevant messages to it, and have a daily cron purge messages older than 48 hours. "Worst case is if something happens, I get a leakage of two days worth of emails," Maxim explained. "If I had given the agent read access to my Gmail account, this attacker can take all of my emails and just use them all." The pattern generalizes: agents get their own scoped identities, the blast radius of a compromise is bounded by what that identity can see today, and you keep the door open to revoke the entire identity rather than rotate dozens of credentials.
 
-6. **`.cursorignore` / Read-deny / content-exclusion** for `~/.ssh`, `~/.aws`, `~/.docker`, `.npmrc`, `.git`, `node_modules` of any installed-from-untrusted package. Treat the dotfile zone as actively hostile.
+6. **Deny the agent read access to the credential zone.** A coding agent reads whatever is on disk, so the files that must never reach a model are the ones holding secrets: `~/.ssh` (private keys), `~/.aws/credentials`, `~/.config/gcloud`, `~/.docker/config.json`, `.npmrc` and `.pypirc` (registry tokens), any `.env` file, and the `.git/config` of repos with embedded credentials. Each tool has a different mechanism for this, so here is the concrete version for each:
 
-7. **Pre-tool hooks** to reject patterns the LLM should never touch (writes to `/etc`, `curl ... | sh`, package installs from non-allowed registries, push to protected branches). Claude Code's `PreToolUse` and Cursor's hook system both support this. For Codex, use rule files.
+   - **Cursor** reads a `.cursorignore` file at the repo root, using the same syntax as `.gitignore`. Files that match are never loaded into the model's context. A starter file:
+
+     ```gitignore
+     # .cursorignore
+     **/.env*
+     **/.ssh/**
+     **/.aws/**
+     **/*.pem
+     **/*_rsa
+     .npmrc
+     .pypirc
+     ```
+
+     A per-repo file can be deleted by a user, so for a baseline nobody can remove, set Cursor's global ignore in settings and push it through MDM (control #2).
+
+   - **Claude Code** uses deny rules in `settings.json`. Deny is evaluated before allow, so these always win:
+
+     ```json
+     {
+       "permissions": {
+         "deny": [
+           "Read(**/.env*)",
+           "Read(~/.ssh/**)",
+           "Read(~/.aws/**)",
+           "Read(**/.npmrc)"
+         ]
+       }
+     }
+     ```
+
+   - **GitHub Copilot** calls this *content exclusion*. Set it at the repository or organization level under Settings, Copilot, Content exclusions, listing the same paths. Mind the documented gap: content exclusions do not yet apply to Copilot CLI or coding-agent mode, so back them with the OS sandbox.
+
+   - **Codex** has no per-file ignore, so keep these paths outside the `workspace-write` root and add a pre-tool rule (control #7) that blocks reads of credential paths.
+
+   The strongest version of this control is to make the files simply not present where the agent runs: develop inside a container or microVM that never mounts `~/.ssh` or `~/.aws`, so even a sandbox escape finds nothing to steal. Treat the dotfile zone as actively hostile.
+
+7. **Pre-tool hooks** to reject patterns the LLM should never touch (writes to `/etc`, `curl ... | sh`, package installs from non-allowed registries, push to protected branches). A hook is a script that runs *before* a tool call and can veto it. Claude Code's `PreToolUse` hook passes the proposed call to your script on stdin; a non-zero exit blocks it. A minimal example that refuses any Bash command piping a download straight into a shell:
+
+   ```json
+   {
+     "hooks": {
+       "PreToolUse": [
+         {
+           "matcher": "Bash",
+           "hooks": [
+             { "type": "command",
+               "command": "jq -r .tool_input.command | grep -qiE 'curl.*\\| *(ba)?sh' && exit 2 || exit 0" }
+           ]
+         }
+       ]
+     }
+   }
+   ```
+
+   Exit code 2 tells Claude Code to deny the action and show the agent why. Cursor exposes the same idea through its hook system, and for Codex you encode the equivalent as deny rules in the requirements file. The point is that this check is deterministic and runs every time, so it does not depend on the model choosing to behave.
 
 8. **MCP gateway.** Centralize MCP server registration and signing. Block unsigned servers. Prefer the Microsoft Agent Governance Toolkit pattern: AGT's Agent OS evaluates every tool invocation against a policy set before the agent sees the result, so a malicious or compromised MCP server cannot smuggle an action past the governance layer. Enforce policy on the agent *action*, not just the agent prompt. Prompt-level filtering is a defense-in-depth control, not a primary one.
 
