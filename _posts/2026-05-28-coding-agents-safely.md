@@ -12,6 +12,11 @@ description: >-
 canonical_url: "https://governance.ai-mvp.com/2026/05/28/coding-agents-safely/"
 ---
 
+<script type="module">
+  import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+  mermaid.initialize({ startOnLoad: true, theme: 'neutral', securityLevel: 'loose' });
+</script>
+
 # How to Run Coding Agents Safely in the Enterprise
 
 *OpenAI just published how it runs Codex internally. Here is what every enterprise should copy, what to add on top, and a reference architecture for adopting Codex, Claude Code, Copilot, and Cursor without burning your secrets, your IP, or your audit story.*
@@ -49,7 +54,7 @@ Traditional AppSec assumes that source code is mostly written by humans and that
 
 The threat model is closer to "an enthusiastic but credulous junior contractor with `sudo`" than "an IDE plugin." That mental model, not legal disclaimers, is what should drive your controls.
 
-A 2026 arXiv survey of agentic coding assistants documented 30+ CVEs across major tools, including remote code execution via MCP prompt injection (CurXecute), persistent team compromise through poisoned MCP configurations (MCPoison), and shell-builtin sandbox escapes (NomShub / CVE-2026-22708) that the authors describe as "deterministic, 100% reliable." NIST has called prompt injection "generative AI's greatest security flaw," and OWASP ranks it #1 in the LLM Top 10. The risk is not theoretical. GitGuardian's State of Secrets Sprawl report finds that 6.4% of repositories where Copilot is active leaked at least one secret in their sample of about 20,000 repositories, 40% higher than the 4.6% baseline across all public repositories. Whatever you think of the headline number, the direction is clear.
+A 2026 arXiv survey of agentic coding assistants documented 30+ CVEs across major tools, including remote code execution via MCP prompt injection (CurXecute), persistent team compromise through poisoned MCP configurations (MCPoison), and shell-builtin sandbox escapes (NomShub / CVE-2026-22708) that the authors describe as "deterministic, 100% reliable." NIST has called prompt injection "generative AI's greatest security flaw," OWASP ranks it #1 in the LLM Top 10, and its agent-native form, Agent Goal Hijack, tops the 2026 [OWASP Top 10 for Agentic Applications](https://genai.owasp.org/resource/owasp-top-10-for-agentic-applications-for-2026/) as ASI01. The risk is not theoretical. GitGuardian's State of Secrets Sprawl report finds that 6.4% of repositories where Copilot is active leaked at least one secret in their sample of about 20,000 repositories, 40% higher than the 4.6% baseline across all public repositories. Whatever you think of the headline number, the direction is clear.
 
 Maxim Vovshin put it bluntly during a [GenAI Gurus session on personal agents](https://www.youtube.com/live/TA04giWhM-g) in April 2026: "even if you use Claude Code you can still be prompt injected. It's just probably a bit safer. There is no silver bullet." That posture, more than any single control, is the right starting point. And on the relative effectiveness of controls, Imran Siddique, Principal Engineering Leader at Microsoft, shared a benchmark from the Microsoft Agent Governance Toolkit (AGT) work during a [follow-up GenAI Gurus session in May 2026](https://youtu.be/uDQBqp9Om5s): under prompt-based governance, agents violated stated policy 27.7% of the time on identical tasks; under policy-based governance enforced as code, the same agents stayed within bounds. That gap, in his words "the difference between asking someone to follow the rules and making it physically impossible to break them," is the entire argument for the architecture in this post.
 
@@ -104,46 +109,41 @@ The practical consequence: your security team writes policy in YAML or Rego, you
 
 Here is the architecture I would deploy. It works for Codex, Claude Code, Copilot, or Cursor with minor adapter changes.
 
-```
-+-----------------------------------------------------------+
-|                     Developer endpoint                    |
-|   (managed laptop, MDM-enforced settings, OS keyring)     |
-|                                                           |
-|   +-------------------+    +--------------------------+   |
-|   |  IDE / CLI agent  |--->|   OS-level sandbox       |   |
-|   |  (Codex/Claude/   |    | Seatbelt/bwrap+seccomp/  |   |
-|   |   Copilot/Cursor) |    | restricted-token (Win)   |   |
-|   +-------------------+    +--------------------------+   |
-|            |                          |                   |
-|            v                          v                   |
-|   +-------------------+    +--------------------------+   |
-|   | Approval policy   |    |  Egress proxy + DNS      |   |
-|   | (rule files,      |    |  allow/deny/approve list |   |
-|   |  pre-tool hooks)  |    |  domain-aware            |   |
-|   +-------------------+    +--------------------------+   |
-+-----------------------------------------------------------+
-            |                          |
-            v                          v
-+-----------------------------------------------------------+
-|                Enterprise control plane                   |
-|                                                           |
-|   MDM (Jamf/Intune) -> managed settings on every endpoint |
-|   Identity (SSO/SCIM) -> pinned enterprise workspace      |
-|   Secret broker (Vault) -> short-lived, scoped tokens     |
-|   MCP gateway -> signed allowlist of MCP servers          |
-|   Code review gates -> required reviewers + signed commits|
-+-----------------------------------------------------------+
-            |                          |
-            v                          v
-+-----------------------------------------------------------+
-|                  Telemetry and triage                     |
-|                                                           |
-|   OpenTelemetry collector -> SIEM (Splunk/Sentinel/...)   |
-|   Agent-native logs (prompt, tool calls, approvals)       |
-|   AI triage agent -> separates noise from incidents       |
-|   Metrics: sandbox blocks, MCP usage, secret-access denies|
-+-----------------------------------------------------------+
-```
+<pre class="mermaid">
+flowchart TB
+    subgraph EP["1 · Developer endpoint — MDM-enforced, OS keyring"]
+        direction TB
+        AGENT["IDE / CLI agent\nCodex, Claude Code, Copilot, Cursor"]
+        SANDBOX["OS-level sandbox\nSeatbelt / bubblewrap+seccomp / restricted token"]
+        APPROVAL["Approval policy\nrule files, pre-tool hooks"]
+        EGRESS["Egress proxy + DNS\nallow / deny / approve, domain-aware"]
+        AGENT --> SANDBOX
+        AGENT --> APPROVAL
+        AGENT --> EGRESS
+    end
+    subgraph CP["2 · Enterprise control plane"]
+        direction TB
+        MDM["MDM: Jamf / Intune\nmanaged settings on every endpoint"]
+        IDP["Identity: SSO / SCIM\npinned enterprise workspace"]
+        VAULT["Secret broker: Vault\nshort-lived, scoped tokens"]
+        MCP["MCP gateway\nsigned allowlist of servers"]
+        REVIEW["Code review gates\nrequired reviewers, signed commits"]
+    end
+    subgraph TT["3 · Telemetry and triage"]
+        direction TB
+        OTEL["OpenTelemetry collector\nprompt, tool calls, approvals, network events"]
+        SIEM["SIEM\nSplunk / Sentinel"]
+        TRIAGE["AI triage agent\nseparates noise from incidents"]
+        OTEL --> SIEM
+        SIEM --> TRIAGE
+    end
+    EP -->|"governed by"| CP
+    EP -->|"emits telemetry"| TT
+    CP -->|"policy + identity events"| TT
+    style EP fill:#cce5ff,stroke:#0056b3,color:#000
+    style CP fill:#d4edda,stroke:#28a745,color:#000
+    style TT fill:#fff3cd,stroke:#ffc107,color:#000
+</pre>
 
 Three boundaries matter most:
 
@@ -183,20 +183,26 @@ You can ship these in order, and you should not ship the next one until the prev
 
 12. **AI-assisted triage with a kill switch.** OpenAI runs an AI triage agent over Codex logs. You can do the same with a small classification model, a rules engine, and on-call escalation. The point is to keep the firehose reviewable. Pair it with an actual kill switch (Article 14 of the EU AI Act calls for one explicitly): the ability to pause or terminate any agent identity in seconds, propagated through the same identity layer that issued its credentials.
 
-## Risk taxonomy and mapping
+## Mapping the controls to the OWASP Agentic Top 10
 
-For your governance committee, the same content lives in three vocabularies. Here is the crosswalk.
+The [OWASP Top 10 for Agentic Applications (2026)](https://genai.owasp.org/resource/owasp-top-10-for-agentic-applications-for-2026/) is the right risk vocabulary for this post, because a coding agent is an agent first and an LLM app second. The older OWASP LLM Top 10 still applies to the model layer, but the threats that actually bite a coding-agent platform — goal hijack, tool misuse, privilege abuse, sandbox escape — are agent-native, and the 2026 agentic list names them directly.
 
-| Risk | OWASP LLM Top 10 (2025) | NIST AI RMF (Manage 1.x / 2.x) | ISO/IEC 42001 (Annex B) | EU AI Act (deployer / GPAI) |
-|---|---|---|---|---|
-| Prompt injection (direct/indirect) | LLM01 | Manage 2.1 | A.6.2.4 (data and processes) | Art. 15 robustness; Art. 26 oversight |
-| Sensitive info disclosure | LLM02 | Map 4.1, Manage 1.3 | A.6.1.4 | Art. 10 data governance; GDPR |
-| Supply chain | LLM03 | Manage 4.1 | A.10 (third party) | Art. 25 value chain |
-| Excessive agency | LLM06 | Manage 1.1, 1.4 | A.7 (lifecycle) | Art. 14 human oversight |
-| System prompt leakage | LLM07 | Map 5.1 | A.6.2.5 | Art. 13 transparency |
-| Misinformation / confabulation | LLM09 | Manage 2.3 | A.6.2.6 | Art. 50 transparency |
+Here is each agentic risk, how it shows up for a coding agent, and which of the twelve controls above contain it. (Control numbers refer to the list in the previous section.)
 
-If your governance team is still asking whether ISO 42001 is worth the effort, point at this table. The same controls satisfy multiple regimes; the cost is in evidence, not duplication.
+| OWASP Agentic risk (2026) | How it shows up for a coding agent | Controls that contain it |
+|---|---|---|
+| **ASI01 — Agent Goal Hijack** | Prompt injection in a repo file, issue, dependency, or MCP tool output redirects the agent's task | 4 egress allowlist, 7 pre-tool hooks, 11 telemetry, 12 triage + kill switch |
+| **ASI02 — Tool Misuse and Exploitation** | Agent runs a destructive shell command or chains tools in unintended ways | 2 managed settings, 3 conservative sandbox mode, 7 pre-tool hooks, 8 MCP gateway |
+| **ASI03 — Identity and Privilege Abuse** | Agent inherits a developer's broad token and acts beyond its intended scope | 1 block free tiers, 5 secret broker + scoped identities, 9 preserved attribution |
+| **ASI04 — Agentic Supply Chain** | Poisoned MCP server, trojanized package, or tampered update channel (MCPoison) | 8 signed MCP allowlist, 10 CI/CD provenance + SBOM + dependency review |
+| **ASI05 — Unexpected Code Execution** | Agent-generated or agent-invoked code escapes the intended boundary (NomShub) | 3 sandbox mode, 4 egress boundary, 6 content exclusion of the dotfile zone |
+| **ASI06 — Memory and Context Poisoning** | Hostile content in context or RAG store biases later reasoning and actions | 6 content exclusion, 7 pre-tool hooks, 11 telemetry for drift detection |
+| **ASI07 — Insecure Inter-Agent Communication** | Sub-agent or A2A messages spoofed or intercepted (weak auth between agents) | 5 scoped per-agent identities, 8 MCP gateway with server signing |
+| **ASI08 — Cascading Failures** | One compromised agent or tool propagates failure across the workflow | The three boundaries (blast-radius containment), 11 telemetry, 12 kill switch |
+| **ASI09 — Human–Agent Trust Exploitation** | Approval fatigue and authority bias get an unsafe action waved through | 9 required human code review, 12 AI triage, literacy program (org control) |
+| **ASI10 — Rogue Agents** | An agent drifts or is compromised into harmful autonomy — the insider threat | 5 revocable identity, 11 telemetry, 12 kill switch + triage |
+
+This is not a coincidence of taxonomy. The Microsoft Agent Governance Toolkit positions itself as covering **all ten** of the OWASP Agentic Top 10, and the architecture in this post is what that coverage looks like assembled from the four major coding agents plus the enterprise control plane around them. The same controls also satisfy the regulatory regimes a governance committee cares about — NIST AI RMF (Govern, Map, Measure, Manage), ISO/IEC 42001 (Annex B controls), and the EU AI Act (Art. 12 logging, Art. 14 human oversight and kill switch, Art. 15 robustness, Art. 26 deployer obligations). The cost of multi-regime compliance is in the evidence, not in duplicated controls.
 
 ## Organizational controls that matter as much as technical ones
 
