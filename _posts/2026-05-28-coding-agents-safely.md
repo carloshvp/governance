@@ -27,7 +27,7 @@ A couple of weeks ago I wrote [a short LinkedIn note](https://www.linkedin.com/p
 
 The DMs that followed surprised me. Various known and first-met security leads, platform engineers, and AI product managers reached out to discuss further details. This post is the answer.
 
-It also builds directly on two GenAI Gurus community sessions that shaped my thinking: an April session with **Maxim Vovshin** on personal agents and the safety patterns he uses to keep them bounded, and a May session with **Imran Siddique** (Principal Engineering Leader at Microsoft) on the Microsoft Agent Governance Toolkit (AGT) and its policy-as-code approach. Both are linked at the end. The architecture below would not exist without those conversations.
+It also builds directly on two GenAI Gurus community sessions that shaped my thinking: an April session with **[Maxim Vovshin](https://www.linkedin.com/in/maxim-vovshin-a5a0a5164/)** on personal agents and the safety patterns he uses to keep them bounded, and a May session with **[Imran Siddique](https://www.linkedin.com/in/imransiddique1986/)** (Principal Engineering Leader at Microsoft) on the Microsoft Agent Governance Toolkit (AGT) and its policy-as-code approach. Both are linked at the end. The architecture below would not exist without those conversations.
 
 ## The post that changed the conversation
 
