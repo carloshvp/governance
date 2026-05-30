@@ -25,7 +25,7 @@ canonical_url: "https://governance.ai-mvp.com/2026/05/28/coding-agents-safely/"
 
 A couple of weeks ago I wrote [a short LinkedIn note](https://www.linkedin.com/posts/carloshvp_aigovernance-agentgovernance-aisafety-activity-7459639476135407616-nfQY) about OpenAI's then-new paper "Running Codex safely at OpenAI." The point of the note was small: five major vendors have converged on essentially the same coding-agent safety architecture, which means we now have a public reference design and no good excuse for not deploying it.
 
-The DMs that followed surprised me. Security leads, platform engineers, and AI product managers all wrote in with the same request: skip the summary, give us the full architecture. This post is the answer.
+The DMs that followed surprised me. Various known and first-met security leads, platform engineers, and AI product managers reached out to discuss further details. This post is the answer.
 
 It also builds directly on two GenAI Gurus community sessions that shaped my thinking: an April session with **Maxim Vovshin** on personal agents and the safety patterns he uses to keep them bounded, and a May session with **Imran Siddique** (Principal Engineering Leader at Microsoft) on the Microsoft Agent Governance Toolkit (AGT) and its policy-as-code approach. Both are linked at the end. The architecture below would not exist without those conversations.
 
