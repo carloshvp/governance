@@ -461,14 +461,15 @@ Every section above flagged at least one gap. This is expected. The Agent Govern
 
 ## What's next
 
-This is the first post in a series on EU AI Act compliance for AI agent developers using Microsoft's Agent Governance Toolkit:
+This is the first post in a series on practical AI governance for AI agent developers using Microsoft's Agent Governance Toolkit and related open-source primitives:
 
-- **Post 2:** From NIM to Jetson: A NeMo Guardrails Configuration Pack for EU AI Act Compliance
-- **Post 3:** Open Weights, Real Obligations: EU AI Act for GPAI Providers and the Developers Who Deploy Them
-- **Post 4:** Sovereign AI Infrastructure: EU AI Act Compliance for On-Prem and European Cloud Deployments
-- **Post 5:** The Contributor Journey: Building the Governance Layer the EU AI Act Requires
+- **Post 2:** [How to Run Coding Agents Safely in the Enterprise](/2026/05/28/coding-agents-safely/) — reference architecture for adopting Codex, Claude Code, Copilot, and Cursor without burning your secrets, your IP, or your audit story
+- **Post 3:** From NIM to Jetson: A NeMo Guardrails Configuration Pack for EU AI Act Compliance
+- **Post 4:** Open Weights, Real Obligations: EU AI Act for GPAI Providers and the Developers Who Deploy Them
+- **Post 5:** Sovereign AI Infrastructure: EU AI Act Compliance for On-Prem and European Cloud Deployments
+- **Post 6:** The Contributor Journey: Building the Governance Layer the EU AI Act Requires
 
-The full series lives at [eu-ai-act.ai-mvp.com](https://eu-ai-act.ai-mvp.com).
+The full series lives at [governance.ai-mvp.com](https://governance.ai-mvp.com).
 
 If you found this useful, the companion resource is **[Awesome EU AI Act](https://github.com/GenAI-Gurus/awesome-eu-ai-act)** — a community-maintained list of 200+ official sources, open source tools, templates, and guides for EU AI Act compliance. A GitHub star helps other developers find it.
 

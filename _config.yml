@@ -3,7 +3,7 @@ description: >-
   Practical compliance for developers building AI agents under the EU AI Act —
   using Microsoft's open-source Agent Governance Toolkit.
 baseurl: ""
-url: "https://eu-ai-act.ai-mvp.com"
+url: "https://governance.ai-mvp.com"
 
 author: "Carlos Hernandez"
 github_username: carloshvp
