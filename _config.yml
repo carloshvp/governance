@@ -1,7 +1,7 @@
 title: "Practical AI Governance for Builders"
 description: >-
   Technical controls and runtime governance for teams deploying AI in Europe and
-  beyond — sandboxing, policy-as-code, agent telemetry, and EU AI Act compliance,
+  beyond: sandboxing, policy-as-code, agent telemetry, and EU AI Act compliance,
   with real code and no vendor spin.
 baseurl: ""
 url: "https://governance.ai-mvp.com"

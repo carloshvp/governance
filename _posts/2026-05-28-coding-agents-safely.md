@@ -96,12 +96,12 @@ Two ideas from the May 2026 Microsoft AGT session anchor everything that follows
 
 The [Microsoft Agent Governance Toolkit](https://github.com/microsoft/agent-governance-toolkit) is the cleanest open-source reference implementation of this layer that exists today. It is MIT-licensed, framework-agnostic, and structured around four components that map directly to the boundaries this post argues for:
 
-- **Agent OS** — the policy engine. Sub-millisecond YAML, OPA Rego, or Cedar policies intercept every tool call and agent action before execution. This is the kernel-space layer.
-- **AgentMesh** — zero-trust identity. Every agent gets a Decentralized Identifier (DID) with an Ed25519 key pair, and every action it takes is cryptographically signed and attributable. This is what makes the "identity boundary" below enforceable in practice.
-- **Agent SRE** — reliability and SLOs. SLO-based circuit breakers, accuracy thresholds, and degradation triggers. This is the operational layer that turns governance from a compliance artifact into something a platform team can actually run.
-- **Agent Compliance** — attestation CLI. Generates the signed conformity reports you need for audit, mapped article-by-article to the EU AI Act (Articles 9, 11, 12, 13, 14, 15, 50) and to ISO/IEC 42001.
+- **Agent OS:** the policy engine. Sub-millisecond YAML, OPA Rego, or Cedar policies intercept every tool call and agent action before execution. This is the kernel-space layer.
+- **AgentMesh:** zero-trust identity. Every agent gets a Decentralized Identifier (DID) with an Ed25519 key pair, and every action it takes is cryptographically signed and attributable. This is what makes the "identity boundary" below enforceable in practice.
+- **Agent SRE:** reliability and SLOs. SLO-based circuit breakers, accuracy thresholds, and degradation triggers. This is the operational layer that turns governance from a compliance artifact into something a platform team can actually run.
+- **Agent Compliance:** attestation CLI. Generates the signed conformity reports you need for audit, mapped article-by-article to the EU AI Act (Articles 9, 11, 12, 13, 14, 15, 50) and to ISO/IEC 42001.
 
-The repo's own positioning is worth reading literally: AGT covers **10 out of 10 of the OWASP Agentic Top 10**, which is the most comprehensive single answer to that threat list shipping today. For the rest of this post, when I say "policy engine" or "governance layer," AGT is what I have in mind as the concrete tool — though every primitive below works with Open Policy Agent, Cedar, or a hand-rolled equivalent.
+The repo's own positioning is worth reading literally: AGT covers **10 out of 10 of the OWASP Agentic Top 10**, which is the most comprehensive single answer to that threat list shipping today. For the rest of this post, when I say "policy engine" or "governance layer," AGT is what I have in mind as the concrete tool, though every primitive below works with Open Policy Agent, Cedar, or a hand-rolled equivalent.
 
 The practical consequence: your security team writes policy in YAML or Rego, your agent team writes agent code, and the two repositories are reviewed independently. Same pattern as Open Policy Agent for Kubernetes. The novelty is applying it to non-deterministic systems.
 
@@ -111,7 +111,7 @@ Here is the architecture I would deploy. It works for Codex, Claude Code, Copilo
 
 <pre class="mermaid">
 flowchart TB
-    subgraph EP["1 · Developer endpoint — MDM-enforced, OS keyring"]
+    subgraph EP["1 · Developer endpoint, MDM-enforced, OS keyring"]
         direction TB
         AGENT["IDE / CLI agent\nCodex, Claude Code, Copilot, Cursor"]
         SANDBOX["OS-level sandbox\nSeatbelt / bubblewrap+seccomp / restricted token"]
@@ -173,7 +173,7 @@ You can ship these in order, and you should not ship the next one until the prev
 
 7. **Pre-tool hooks** to reject patterns the LLM should never touch (writes to `/etc`, `curl ... | sh`, package installs from non-allowed registries, push to protected branches). Claude Code's `PreToolUse` and Cursor's hook system both support this. For Codex, use rule files.
 
-8. **MCP gateway.** Centralize MCP server registration and signing. Block unsigned servers. Prefer the Microsoft Agent Governance Toolkit pattern: AGT's Agent OS evaluates every tool invocation against a policy set before the agent sees the result, so a malicious or compromised MCP server cannot smuggle an action past the governance layer. Enforce policy on the agent *action*, not just the agent prompt — prompt-level filtering is a defense-in-depth control, not a primary one.
+8. **MCP gateway.** Centralize MCP server registration and signing. Block unsigned servers. Prefer the Microsoft Agent Governance Toolkit pattern: AGT's Agent OS evaluates every tool invocation against a policy set before the agent sees the result, so a malicious or compromised MCP server cannot smuggle an action past the governance layer. Enforce policy on the agent *action*, not just the agent prompt. Prompt-level filtering is a defense-in-depth control, not a primary one.
 
 9. **Required code review for AI-authored PRs**, with attribution preserved (Claude Code's `Co-Authored-By` trailer, Copilot's commit attribution). Codeowners enforced on protected branches. Tests required to merge.
 
@@ -185,24 +185,24 @@ You can ship these in order, and you should not ship the next one until the prev
 
 ## Mapping the controls to the OWASP Agentic Top 10
 
-The [OWASP Top 10 for Agentic Applications (2026)](https://genai.owasp.org/resource/owasp-top-10-for-agentic-applications-for-2026/) is the right risk vocabulary for this post, because a coding agent is an agent first and an LLM app second. The older OWASP LLM Top 10 still applies to the model layer, but the threats that actually bite a coding-agent platform — goal hijack, tool misuse, privilege abuse, sandbox escape — are agent-native, and the 2026 agentic list names them directly.
+The [OWASP Top 10 for Agentic Applications (2026)](https://genai.owasp.org/resource/owasp-top-10-for-agentic-applications-for-2026/) is the right risk vocabulary for this post, because a coding agent is an agent first and an LLM app second. The older OWASP LLM Top 10 still applies to the model layer, but the threats that actually bite a coding-agent platform (goal hijack, tool misuse, privilege abuse, sandbox escape) are agent-native, and the 2026 agentic list names them directly.
 
 Here is each agentic risk, how it shows up for a coding agent, and which of the twelve controls above contain it. (Control numbers refer to the list in the previous section.)
 
 | OWASP Agentic risk (2026) | How it shows up for a coding agent | Controls that contain it |
 |---|---|---|
-| **ASI01 — Agent Goal Hijack** | Prompt injection in a repo file, issue, dependency, or MCP tool output redirects the agent's task | 4 egress allowlist, 7 pre-tool hooks, 11 telemetry, 12 triage + kill switch |
-| **ASI02 — Tool Misuse and Exploitation** | Agent runs a destructive shell command or chains tools in unintended ways | 2 managed settings, 3 conservative sandbox mode, 7 pre-tool hooks, 8 MCP gateway |
-| **ASI03 — Identity and Privilege Abuse** | Agent inherits a developer's broad token and acts beyond its intended scope | 1 block free tiers, 5 secret broker + scoped identities, 9 preserved attribution |
-| **ASI04 — Agentic Supply Chain** | Poisoned MCP server, trojanized package, or tampered update channel (MCPoison) | 8 signed MCP allowlist, 10 CI/CD provenance + SBOM + dependency review |
-| **ASI05 — Unexpected Code Execution** | Agent-generated or agent-invoked code escapes the intended boundary (NomShub) | 3 sandbox mode, 4 egress boundary, 6 content exclusion of the dotfile zone |
-| **ASI06 — Memory and Context Poisoning** | Hostile content in context or RAG store biases later reasoning and actions | 6 content exclusion, 7 pre-tool hooks, 11 telemetry for drift detection |
-| **ASI07 — Insecure Inter-Agent Communication** | Sub-agent or A2A messages spoofed or intercepted (weak auth between agents) | 5 scoped per-agent identities, 8 MCP gateway with server signing |
-| **ASI08 — Cascading Failures** | One compromised agent or tool propagates failure across the workflow | The three boundaries (blast-radius containment), 11 telemetry, 12 kill switch |
-| **ASI09 — Human–Agent Trust Exploitation** | Approval fatigue and authority bias get an unsafe action waved through | 9 required human code review, 12 AI triage, literacy program (org control) |
-| **ASI10 — Rogue Agents** | An agent drifts or is compromised into harmful autonomy — the insider threat | 5 revocable identity, 11 telemetry, 12 kill switch + triage |
+| **ASI01: Agent Goal Hijack** | Prompt injection in a repo file, issue, dependency, or MCP tool output redirects the agent's task | 4 egress allowlist, 7 pre-tool hooks, 11 telemetry, 12 triage + kill switch |
+| **ASI02: Tool Misuse and Exploitation** | Agent runs a destructive shell command or chains tools in unintended ways | 2 managed settings, 3 conservative sandbox mode, 7 pre-tool hooks, 8 MCP gateway |
+| **ASI03: Identity and Privilege Abuse** | Agent inherits a developer's broad token and acts beyond its intended scope | 1 block free tiers, 5 secret broker + scoped identities, 9 preserved attribution |
+| **ASI04: Agentic Supply Chain** | Poisoned MCP server, trojanized package, or tampered update channel (MCPoison) | 8 signed MCP allowlist, 10 CI/CD provenance + SBOM + dependency review |
+| **ASI05: Unexpected Code Execution** | Agent-generated or agent-invoked code escapes the intended boundary (NomShub) | 3 sandbox mode, 4 egress boundary, 6 content exclusion of the dotfile zone |
+| **ASI06: Memory and Context Poisoning** | Hostile content in context or RAG store biases later reasoning and actions | 6 content exclusion, 7 pre-tool hooks, 11 telemetry for drift detection |
+| **ASI07: Insecure Inter-Agent Communication** | Sub-agent or A2A messages spoofed or intercepted (weak auth between agents) | 5 scoped per-agent identities, 8 MCP gateway with server signing |
+| **ASI08: Cascading Failures** | One compromised agent or tool propagates failure across the workflow | The three boundaries (blast-radius containment), 11 telemetry, 12 kill switch |
+| **ASI09: Human-Agent Trust Exploitation** | Approval fatigue and authority bias get an unsafe action waved through | 9 required human code review, 12 AI triage, literacy program (org control) |
+| **ASI10: Rogue Agents** | An agent drifts or is compromised into harmful autonomy, the insider threat | 5 revocable identity, 11 telemetry, 12 kill switch + triage |
 
-This is not a coincidence of taxonomy. The Microsoft Agent Governance Toolkit positions itself as covering **all ten** of the OWASP Agentic Top 10, and the architecture in this post is what that coverage looks like assembled from the four major coding agents plus the enterprise control plane around them. The same controls also satisfy the regulatory regimes a governance committee cares about — NIST AI RMF (Govern, Map, Measure, Manage), ISO/IEC 42001 (Annex B controls), and the EU AI Act (Art. 12 logging, Art. 14 human oversight and kill switch, Art. 15 robustness, Art. 26 deployer obligations). The cost of multi-regime compliance is in the evidence, not in duplicated controls.
+This is not a coincidence of taxonomy. The Microsoft Agent Governance Toolkit positions itself as covering **all ten** of the OWASP Agentic Top 10, and the architecture in this post is what that coverage looks like assembled from the four major coding agents plus the enterprise control plane around them. The same controls also satisfy the regulatory regimes a governance committee cares about: NIST AI RMF (Govern, Map, Measure, Manage), ISO/IEC 42001 (Annex B controls), and the EU AI Act (Art. 12 logging, Art. 14 human oversight and kill switch, Art. 15 robustness, Art. 26 deployer obligations). The cost of multi-regime compliance is in the evidence, not in duplicated controls.
 
 ## Organizational controls that matter as much as technical ones
 
@@ -225,7 +225,7 @@ Three places to take this further. The first two are the conversations that prod
 
 - **The April 2026 GenAI Gurus session on personal agents** with Maxim Vovshin walks through the inner architecture of an always-on agent harness (models, skills, harness, tools), the front-matter-first context engineering pattern that keeps token costs sane, and a specific set of opinionated safety patterns: separate identities, separate machines, deny-by-default for credentials that touch anything you cannot afford to lose. The Jensen Huang capability-separation rule above came up in the live Q&A. [Watch on YouTube.](https://www.youtube.com/live/TA04giWhM-g)
 - **The May 2026 GenAI Gurus session on the Microsoft Agent Governance Toolkit** with Imran Siddique covers the kernel-space architecture, the policy-vs-prompt benchmark, the EU AI Act article-by-article mapping (Articles 5, 12, 13, 14, 15), and a CI/CD deployment-gate pattern in six lines of Python that fails the build if your agent does not meet the compliance bar. [Watch on YouTube.](https://youtu.be/uDQBqp9Om5s)
-- **The next GenAI Gurus session, June 18, 2026, with Marius Hobbhahn (CEO and founder of Apollo Research)** picks up exactly where this post ends. This post argues that agent-native telemetry is the most under-built layer in most enterprises; Marius will present findings from *tens of thousands of real coding agent traces* — dangerous commands, data exfiltration attempts, insecure code modifications, instruction drift, scope creep, and overclaiming behavior — plus a working demo of Apollo's **Watcher** tool for real-time oversight, tied back to the OWASP Top 10 for Agentic Applications. If you only attend one community session this quarter, make it this one. [Details and RSVP on LinkedIn.](https://www.linkedin.com/posts/carloshvp_openclaw-agenticengineering-owasp-activity-7463195258156167169-J4Ra)
+- **The next GenAI Gurus session, June 18, 2026, with Marius Hobbhahn (CEO and founder of Apollo Research)** picks up exactly where this post ends. This post argues that agent-native telemetry is the most under-built layer in most enterprises; Marius will present findings from *tens of thousands of real coding agent traces* (dangerous commands, data exfiltration attempts, insecure code modifications, instruction drift, scope creep, and overclaiming behavior), plus a working demo of Apollo's **Watcher** tool for real-time oversight, tied back to the OWASP Top 10 for Agentic Applications. If you only attend one community session this quarter, make it this one. [Details and RSVP on LinkedIn.](https://www.linkedin.com/posts/carloshvp_openclaw-agenticengineering-owasp-activity-7463195258156167169-J4Ra)
 
 The GenAI Gurus community itself, 2,500+ practitioners, technical, European-rooted, is at [genai-gurus.com](https://genai-gurus.com).
 
@@ -244,8 +244,8 @@ This is post #2 in a series on practical AI governance for AI agent developers u
 
 The full series lives at [governance.ai-mvp.com](https://governance.ai-mvp.com).
 
-If you found this useful, the companion resource is **[Awesome EU AI Act](https://github.com/GenAI-Gurus/awesome-eu-ai-act)** — a community-maintained list of 200+ official sources, open source tools, templates, and guides for EU AI Act compliance. A GitHub star helps other developers find it.
+If you found this useful, the companion resource is **[Awesome EU AI Act](https://github.com/GenAI-Gurus/awesome-eu-ai-act)**, a community-maintained list of 200+ official sources, open source tools, templates, and guides for EU AI Act compliance. A GitHub star helps other developers find it.
 
 ---
 
-*Written by [Carlos Hernandez](https://www.linkedin.com/in/carloshvp), founder of [GenAI Gurus](https://genai-gurus.com) — Europe's GenAI practitioner community. The Microsoft Agent Governance Toolkit is open source under MIT at [github.com/microsoft/agent-governance-toolkit](https://github.com/microsoft/agent-governance-toolkit). Vendor capability statements in this post reflect public documentation and primary security research as of May 2026; defaults and primitives in this space change fast, so verify against your installed versions before relying on the comparison table for a security review.*
+*Written by [Carlos Hernandez](https://www.linkedin.com/in/carloshvp), founder of [GenAI Gurus](https://genai-gurus.com), Europe's GenAI practitioner community. The Microsoft Agent Governance Toolkit is open source under MIT at [github.com/microsoft/agent-governance-toolkit](https://github.com/microsoft/agent-governance-toolkit). Vendor capability statements in this post reflect public documentation and primary security research as of May 2026; defaults and primitives in this space change fast, so verify against your installed versions before relying on the comparison table for a security review.*

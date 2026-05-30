@@ -3,11 +3,11 @@ layout: home
 list_title: "Posts"
 ---
 
-Deploying AI agents in production? This series is about the engineering of AI governance: the technical controls, runtime guardrails, and audit infrastructure that turn policy into something you can actually ship. Sandboxing, policy-as-code, agent-native telemetry, least-privilege identity — with real code examples using [Microsoft's open-source Agent Governance Toolkit](https://github.com/microsoft/agent-governance-toolkit), honest gap analysis, and no vendor spin.
+Deploying AI agents in production? This series is about the engineering of AI governance: the technical controls, runtime guardrails, and audit infrastructure that turn policy into something you can actually ship. Sandboxing, policy-as-code, agent-native telemetry, least-privilege identity, all with real code examples using [Microsoft's open-source Agent Governance Toolkit](https://github.com/microsoft/agent-governance-toolkit), honest gap analysis, and no vendor spin.
 
-The EU AI Act is the regulatory backbone — its high-risk obligations and Article 50 transparency rules become enforceable on **August 2, 2026** — but the through-line here is broader: governance you can deploy, in Europe and beyond. Policies are not controls. This series is about the controls.
+The EU AI Act is the regulatory backbone, and its high-risk obligations and Article 50 transparency rules become enforceable on **August 2, 2026**. But the through-line here is broader: governance you can deploy, in Europe and beyond. Policies are not controls. This series is about the controls.
 
-Written by [Carlos Hernandez](https://www.linkedin.com/in/carloshvp), founder of [GenAI Gurus](https://genai-gurus.com) — Europe's GenAI practitioner community, and a contributor to the [Microsoft Agent Governance Toolkit](https://github.com/microsoft/agent-governance-toolkit). For a curated index of EU AI Act tools, official sources, and templates, see [Awesome EU AI Act](https://genai-gurus.com/eu-ai-act).
+Written by [Carlos Hernandez](https://www.linkedin.com/in/carloshvp), founder of [GenAI Gurus](https://genai-gurus.com), Europe's GenAI practitioner community, and a contributor to the [Microsoft Agent Governance Toolkit](https://github.com/microsoft/agent-governance-toolkit). For a curated index of EU AI Act tools, official sources, and templates, see [Awesome EU AI Act](https://genai-gurus.com/eu-ai-act).
 
 ---
 
