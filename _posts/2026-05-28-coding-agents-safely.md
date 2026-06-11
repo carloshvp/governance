@@ -295,11 +295,12 @@ This is post #2 in a series on practical AI governance for AI agent developers u
 
 - **Post 1:** [EU AI Act for AI Agent Developers: A Practical Compliance Checklist](/2026/04/10/eu-ai-act-compliance-checklist-for-ai-agent-developers/)
 - **Post 2:** How to Run Coding Agents Safely in the Enterprise *(this post)*
-- **Post 3:** From NIM to Jetson: A NeMo Guardrails Configuration Pack for Production Inference
-- **Post 4:** Open Weights, Real Obligations: Governing GPAI Models You Deploy but Didn't Train
-- **Post 5:** Sovereign AI Infrastructure: Governance Patterns for On-Prem and European Cloud
-- **Post 6:** The Contributor Journey: Building an Open-Source Agent Governance Layer
-- **Post 7:** Governing Agents That Touch the Physical World: Runtime Controls for Embodied AI
+- **Post 3:** [Code Is No Longer the Bottleneck. Verification Is: A Survey of AI-Native Software Delivery in 2026](/2026/06/11/code-is-no-longer-the-bottleneck/)
+- **Post 4:** From NIM to Jetson: A NeMo Guardrails Configuration Pack for Production Inference
+- **Post 5:** Open Weights, Real Obligations: Governing GPAI Models You Deploy but Didn't Train
+- **Post 6:** Sovereign AI Infrastructure: Governance Patterns for On-Prem and European Cloud
+- **Post 7:** The Contributor Journey: Building an Open-Source Agent Governance Layer
+- **Post 8:** Governing Agents That Touch the Physical World: Runtime Controls for Embodied AI
 
 The full series lives at [governance.ai-mvp.com](https://governance.ai-mvp.com).
 
