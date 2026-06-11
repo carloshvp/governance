@@ -14,6 +14,8 @@ description: >-
   mermaid.initialize({ startOnLoad: true, theme: 'neutral', securityLevel: 'loose' });
 </script>
 
+*Update, June 12, 2026: the Digital Omnibus political agreement moves the EU AI Act's high-risk deadlines referenced in this post from August 2, 2026 to December 2, 2027 (stand-alone high-risk systems) and August 2, 2028 (high-risk systems embedded in products), subject to final adoption. AI-enabled machinery is expected to be handled through the Machinery Regulation route instead of the AI Act's direct high-risk regime. The controls and artifacts in this checklist are unchanged; the dates are not. See the regulatory note in [post #3](/2026/06/12/software-promises-hardware-proofs/).*
+
 <style>
 .terminal-window {
   background: #1e1e1e;

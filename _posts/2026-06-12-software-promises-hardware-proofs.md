@@ -34,7 +34,7 @@ canonical_url: "https://governance.ai-mvp.com/2026/06/12/software-promises-hardw
 
 [Post #2 in this series](/2026/05/28/coding-agents-safely/) closed by crediting a May GenAI Gurus session with [Imran Siddique](https://www.linkedin.com/in/imransiddique1986/) on the Microsoft Agent Governance Toolkit and its policy-as-code approach. Two things happened since. Imran left Microsoft to become Chief Platform Officer at OPAQUE, working at the junction of agent governance and confidential computing. And he invited me to contribute to **AgenTrust**, the open-source project he is presenting at the Confidential Computing Summit, specifically to build out its coverage of *embodied AI systems in industrial environments*, working toward external maintainership of that area once the repositories are public.
 
-This series has been walking toward that subject for a while, whether I planned it or not. [Post #1](/2026/04/10/eu-ai-act-compliance-checklist-for-ai-agent-developers/) was the paper layer: what the EU AI Act actually requires from agent developers before August 2, 2026. [Post #2](/2026/05/28/coding-agents-safely/) was the containment layer: how to run agents whose tools touch repositories and secrets. This post is the next step on the same road: agents whose tools move steel.
+This series has been walking toward that subject for a while, whether I planned it or not. [Post #1](/2026/04/10/eu-ai-act-compliance-checklist-for-ai-agent-developers/) was the paper layer: what the EU AI Act actually requires from agent developers. (Its high-risk timelines have since moved with the Digital Omnibus; the update is in the EU section below.) [Post #2](/2026/05/28/coding-agents-safely/) was the containment layer: how to run agents whose tools touch repositories and secrets. This post is the next step on the same road: agents whose tools move steel.
 
 The contribution is [PR #16 on agentrust-io/examples](https://github.com/agentrust-io/examples/pull/16), and everything below describes that public example. One disclosure up front: I contribute in a personal capacity, and the example is fully synthetic. No robot hardware, no vendor SDK, no production endpoint, no proprietary industrial data. What is real is the governance path: every request in this post went through a live cMCP runtime, and the committed evidence files were captured from a real run.
 
@@ -218,16 +218,18 @@ Why does this matter more for embodied agents than for chatbots? Because the con
 
 ## What this means under EU law
 
-Readers of [post #1](/2026/04/10/eu-ai-act-compliance-checklist-for-ai-agent-developers/) will recognize where each artifact lands. A sketch, not legal advice:
+Readers of [post #1](/2026/04/10/eu-ai-act-compliance-checklist-for-ai-agent-developers/) will recognize where each artifact lands. One important update first: after the Digital Omnibus political agreement, the relevant high-risk AI Act dates are no longer 2 August 2026. They move to 2 December 2027 for stand-alone high-risk systems and 2 August 2028 for high-risk systems embedded in products, while AI-enabled machinery is expected to be handled through the Machinery Regulation route, with delegated acts adding the AI-related health and safety requirements. A sketch, not legal advice:
 
 | Obligation | Deadline | What the example demonstrates |
 |---|---|---|
-| EU AI Act Art. 12 (record-keeping) | Aug 2, 2026 | Hash-chained audit + signed TRACE bundle, verifiable offline by a third party |
-| EU AI Act Art. 14 (human oversight) | Aug 2, 2026 | Default-deny, workflow-scoped permits give oversight an actual enforcement point, not a dashboard |
-| EU AI Act Art. 15 (robustness & cybersecurity) | Aug 2, 2026 | Signed manifest against prompt/tool tampering; single-use state tokens against replay |
-| Machinery Regulation 2023/1230 | Jan 14, 2027 | Deliberately *not* claimed: machine safety stays with the certified layer, and the example's architecture encodes that deference |
+| EU AI Act Art. 12 (record-keeping) | 2 Dec 2027 / 2 Aug 2028* | Hash-chained audit + signed TRACE bundle, verifiable offline by a third party |
+| EU AI Act Art. 14 (human oversight) | 2 Dec 2027 / 2 Aug 2028* | Default-deny, workflow-scoped permits give oversight an actual enforcement point, not a dashboard |
+| EU AI Act Art. 15 (robustness & cybersecurity) | 2 Dec 2027 / 2 Aug 2028* | Signed manifest against prompt/tool tampering; single-use state tokens against replay |
+| Machinery Regulation 2023/1230 | 20 Jan 2027 | The route that matters most for this robot cell: the agreed text exempts machinery from the AI Act's direct high-risk regime and handles AI safety through delegated acts here. Machine safety stays with the certified layer, and the example's architecture encodes that deference |
 
-The pattern from post #1 holds: the Act's words ("logging," "oversight," "robustness") only become real when there is a specific artifact a notified body or an auditor can check. This example is my current best answer to what those artifacts look like when the agent's tools are actuators.
+<sub>*Stand-alone high-risk systems / high-risk systems embedded in products, subject to final adoption of the Digital Omnibus text.</sub>
+
+The pattern from post #1 holds: the regulation's words ("logging," "oversight," "robustness") only become real when there is a specific artifact a notified body or an auditor can check. For an industrial robot cell specifically, the legal vehicle is now expected to be the Machinery Regulation rather than the AI Act's direct high-risk regime, but that changes the address, not the homework: the governance artifacts above remain useful as evidence and design controls either way. This example is my current best answer to what those artifacts look like when the agent's tools are actuators.
 
 ## Where this goes next
 
