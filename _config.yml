@@ -10,6 +10,8 @@ author: "Carlos Hernandez"
 github_username: carloshvp
 linkedin_username: carloshvp
 
+timezone: Europe/Berlin
+
 theme: minima
 
 minima:

@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "Software Promises, Hardware Proofs: Governing an Industrial Robot Agent with AgenTrust"
-date: 2026-06-12 18:00:00 +0000
+date: 2026-06-12 00:30:00 +0200
 categories: [runtime, embodied-ai]
 tags: [embodied-ai, robotics, agentrust, cmcp, agent-manifest, trace, cedar, confidential-computing, tee, agent-governance, functional-safety, industrial, eu-ai-act]
 description: >-
