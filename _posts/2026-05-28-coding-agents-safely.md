@@ -29,6 +29,8 @@ The DMs that followed surprised me. Various known and first-met security leads, 
 
 It also builds directly on two GenAI Gurus community sessions that shaped my thinking: an April session with **[Maxim Vovshin](https://www.linkedin.com/in/maxim-vovshin-a5a0a5164/)** on personal agents and the safety patterns he uses to keep them bounded, and a May session with **[Imran Siddique](https://www.linkedin.com/in/imransiddique1986/)** (Principal Engineering Leader at Microsoft) on the Microsoft Agent Governance Toolkit (AGT) and its policy-as-code approach. Both are linked at the end. The architecture below would not exist without those conversations.
 
+*Update, June 12, 2026: that May session turned into a collaboration. Imran, now Chief Platform Officer at OPAQUE, invited me to contribute the first industrial embodied-AI example to AgenTrust, the open-source stack he presents at the Confidential Computing Summit on June 23. The result, and what it says about governing agents whose tools touch the physical world, is [post #3 in this series](/2026/06/12/software-promises-hardware-proofs/).*
+
 ## The post that changed the conversation
 
 On May 8, 2026, OpenAI published "Running Codex safely at OpenAI." It is the most useful piece of public documentation we have on how a frontier lab actually runs an autonomous coding agent against its own production codebase. It is also a rare artifact: a vendor admitting that "control is only half the job" and that "once agents are deployed, security teams need visibility into what these agents are doing and why."
@@ -295,12 +297,12 @@ This is post #2 in a series on practical AI governance for AI agent developers u
 
 - **Post 1:** [EU AI Act for AI Agent Developers: A Practical Compliance Checklist](/2026/04/10/eu-ai-act-compliance-checklist-for-ai-agent-developers/)
 - **Post 2:** How to Run Coding Agents Safely in the Enterprise *(this post)*
-- **Post 3:** [Code Is No Longer the Bottleneck. Verification Is: A Survey of AI-Native Software Delivery in 2026](/2026/06/11/code-is-no-longer-the-bottleneck/)
-- **Post 4:** From NIM to Jetson: A NeMo Guardrails Configuration Pack for Production Inference
-- **Post 5:** Open Weights, Real Obligations: Governing GPAI Models You Deploy but Didn't Train
-- **Post 6:** Sovereign AI Infrastructure: Governance Patterns for On-Prem and European Cloud
-- **Post 7:** The Contributor Journey: Building an Open-Source Agent Governance Layer
-- **Post 8:** Governing Agents That Touch the Physical World: Runtime Controls for Embodied AI
+- **Post 3:** [Software Promises, Hardware Proofs: Governing an Industrial Robot Agent with AgenTrust](/2026/06/12/software-promises-hardware-proofs/), the architecture of this post applied to an agent whose tools move steel instead of code
+- **Post 4:** Code Is No Longer the Bottleneck. Verification Is: A Survey of AI-Native Software Delivery in 2026
+- **Post 5:** From NIM to Jetson: A NeMo Guardrails Configuration Pack for Production Inference
+- **Post 6:** Open Weights, Real Obligations: Governing GPAI Models You Deploy but Didn't Train
+- **Post 7:** Sovereign AI Infrastructure: Governance Patterns for On-Prem and European Cloud
+- **Post 8:** The Contributor Journey: Building an Open-Source Agent Governance Layer
 
 The full series lives at [governance.ai-mvp.com](https://governance.ai-mvp.com).
 

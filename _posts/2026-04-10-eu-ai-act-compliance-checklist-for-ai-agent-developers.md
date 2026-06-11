@@ -464,12 +464,12 @@ Every section above flagged at least one gap. This is expected. The Agent Govern
 This is the first post in a series on practical AI governance for AI agent developers using Microsoft's Agent Governance Toolkit and related open-source primitives:
 
 - **Post 2:** [How to Run Coding Agents Safely in the Enterprise](/2026/05/28/coding-agents-safely/), a reference architecture for adopting Codex, Claude Code, Copilot, and Cursor without burning your secrets, your IP, or your audit story
-- **Post 3:** [Code Is No Longer the Bottleneck. Verification Is: A Survey of AI-Native Software Delivery in 2026](/2026/06/11/code-is-no-longer-the-bottleneck/), the six schools of thought, the manifestos competing to replace Agile, and what the evidence actually says
-- **Post 4:** From NIM to Jetson: A NeMo Guardrails Configuration Pack for Production Inference
-- **Post 5:** Open Weights, Real Obligations: Governing GPAI Models You Deploy but Didn't Train
-- **Post 6:** Sovereign AI Infrastructure: Governance Patterns for On-Prem and European Cloud
-- **Post 7:** The Contributor Journey: Building an Open-Source Agent Governance Layer
-- **Post 8:** Governing Agents That Touch the Physical World: Runtime Controls for Embodied AI
+- **Post 3:** [Software Promises, Hardware Proofs: Governing an Industrial Robot Agent with AgenTrust](/2026/06/12/software-promises-hardware-proofs/), where the Article 12 logging and Article 14 oversight artifacts from this checklist run against a robot cell, and machine safety stays with the certified layer
+- **Post 4:** Code Is No Longer the Bottleneck. Verification Is: A Survey of AI-Native Software Delivery in 2026
+- **Post 5:** From NIM to Jetson: A NeMo Guardrails Configuration Pack for Production Inference
+- **Post 6:** Open Weights, Real Obligations: Governing GPAI Models You Deploy but Didn't Train
+- **Post 7:** Sovereign AI Infrastructure: Governance Patterns for On-Prem and European Cloud
+- **Post 8:** The Contributor Journey: Building an Open-Source Agent Governance Layer
 
 The full series lives at [governance.ai-mvp.com](https://governance.ai-mvp.com).
 
