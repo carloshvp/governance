@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "Ten Thousand Safe Motions: Where Untrusted Agents Do Their Damage"
+title: "When Autonomous AI Agents Control Robots: The Real Threats No Safety System Detects"
 date: 2026-06-06 09:00:00 +0200
 categories: [governance, embodied-ai]
 tags: [embodied-ai, agent-governance, owasp, agentic-security, eu-ai-act, machinery-regulation, agentrust, physical-ai, trust]
@@ -136,7 +136,7 @@ It has to be built.
 
 - **Post 1:** [EU AI Act for AI Agent Developers: A Practical Compliance Checklist](/2026/04/10/eu-ai-act-compliance-checklist-for-ai-agent-developers/)
 - **Post 2:** [How to Run Coding Agents Safely in the Enterprise](/2026/05/28/coding-agents-safely/)
-- **Post 3:** Ten Thousand Safe Motions: Where Untrusted Agents Do Their Damage *(this post)*
+- **Post 3:** When Autonomous AI Agents Control Robots: The Real Threats No Safety System Detects *(this post)*
 - **Post 4:** [Agents Can Restart. Accountability Cannot: Verifiable Trust for Embodied AI](/2026/06/12/software-promises-hardware-proofs/), the running example this post argues for
 - **Post 5:** Code Is No Longer the Bottleneck. Verification Is *(coming soon)*
 

@@ -291,7 +291,7 @@ Agents will keep restarting, forgetting and being replaced. That is what process
 
 - **Post 1:** [EU AI Act for AI Agent Developers: A Practical Compliance Checklist](/2026/04/10/eu-ai-act-compliance-checklist-for-ai-agent-developers/)
 - **Post 2:** [How to Run Coding Agents Safely in the Enterprise](/2026/05/28/coding-agents-safely/)
-- **Post 3:** [Ten Thousand Safe Motions: Where Untrusted Agents Do Their Damage](/2026/06/06/ten-thousand-safe-motions/)
+- **Post 3:** [When Autonomous AI Agents Control Robots: The Real Threats No Safety System Detects](/2026/06/06/ten-thousand-safe-motions/)
 - **Post 4:** Agents Can Restart. Accountability Cannot: Verifiable Trust for Embodied AI *(this post)*
 - **Post 5:** Code Is No Longer the Bottleneck. Verification Is *(coming soon)*
 - **Post 6:** From NIM to Jetson: A NeMo Guardrails Configuration Pack for Production Inference
