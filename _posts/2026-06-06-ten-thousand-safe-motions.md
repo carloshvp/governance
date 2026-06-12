@@ -91,7 +91,7 @@ Five stories, one pattern. The safety layer guarantees that no single motion hur
 
 ## These risks already have names
 
-None of this is new, and names matter, because risks with names get budgets. The [OWASP Top 10 for Agentic Applications](https://genai.owasp.org/) (December 2025) catalogued exactly these failure modes for software agents. Robots do not add new categories. They make the existing ones worse in three ways: consequences cannot be undone, they show up late, and they spread at fleet scale.
+None of this is new, and names matter, because risks with names get budgets. The [OWASP Top 10 for Agentic Applications](https://genai.owasp.org/) (December 2025) catalogued exactly these failure modes for software agents. And none of it is hypothetical: at Black Hat 2025, researchers hijacked Gemini through a poisoned calendar invite and turned on the boiler of a real apartment. Their paper is called ["Invitation Is All You Need"](https://www.safebreach.com/blog/invitation-is-all-you-need-hacking-gemini/). Robots do not add new categories. They make the existing ones worse in three ways: consequences cannot be undone, they show up late, and they spread at fleet scale.
 
 | Story | OWASP agentic risk | What changes with a robot |
 |---|---|---|
