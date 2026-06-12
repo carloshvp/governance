@@ -1,15 +1,14 @@
 ---
 layout: post
-title: "Software Promises, Hardware Proofs: Governing an Industrial Robot Agent with AgenTrust"
+title: "Agents Can Restart. Accountability Cannot: Verifiable Trust for Embodied AI"
 date: 2026-06-12 00:30:00 +0200
 categories: [runtime, embodied-ai]
 tags: [embodied-ai, robotics, agentrust, cmcp, agent-manifest, trace, cedar, confidential-computing, tee, agent-governance, functional-safety, industrial, eu-ai-act]
 description: >-
-  The creator of the Microsoft Agent Governance Toolkit invited me to bring agent
-  governance to embodied AI. This is the first working example: an industrial
-  robot-cell agent governed by a signed manifest, default-deny policy and a
-  verifiable audit trail, and an honest map of where software governance ends
-  and machine safety begins.
+  AI agents can restart, forget or be replaced, but accountability cannot. An
+  industrial robot-cell example shows how AgenTrust binds agent identity,
+  policy-enforced MCP access and verifiable evidence without confusing software
+  authorization with physical safety.
 canonical_url: "https://governance.ai-mvp.com/2026/06/12/software-promises-hardware-proofs/"
 ---
 
@@ -18,25 +17,60 @@ canonical_url: "https://governance.ai-mvp.com/2026/06/12/software-promises-hardw
   mermaid.initialize({ startOnLoad: true, theme: 'neutral', securityLevel: 'loose' });
 </script>
 
-# Software Promises, Hardware Proofs: Governing an Industrial Robot Agent with AgenTrust
+We trust people not because they are perfect, but because they carry continuity.
 
-*On June 23, Imran Siddique presents ["Governing AI Agents at the Hardware Boundary"](https://ccsummit2026.sched.com/event/2NKcF/governing-ai-agents-at-the-hardware-boundary-imran-siddique-microsoft) at the Confidential Computing Summit. His thesis fits in one line: software governance makes promises, hardware governance provides proofs. I spent the past days building the first industrial embodied-AI example for AgenTrust, the open-source stack behind that talk. This post walks through it: what gets proven, what stays a promise, and the exact line where agent governance must hand over to machine safety.*
+Their identity, memory, reputation and accountability survive, however imperfectly, beyond a single action. If something goes wrong, a person cannot normally shut down, discard the context and return as a clean instance with no connection to what happened before.
+
+Agents break that intuition.
+
+An agent can act, stop, restart, lose memory or be replaced. The next instance may not understand what the previous one did, why it did it or what consequences it left behind. A valid API credential can tell us which account made a call. It cannot, by itself, tell us which agent configuration was running, which policy governed it, which tools it was allowed to use or whether its evidence survived the restart.
+
+That is why permission is not enough.
+
+As agents begin to act on our behalf, trust has to become verifiable. Others need to be able to establish which agent acted, under which identity, through which tool boundary, under which policy and with what outcome. Accountability has to outlive the process that performed the action.
+
+This already matters in software. A rogue coding agent can corrupt a repository, leak data, manipulate a workflow or cause serious business damage. That is the risk we will explore on June 18 in the GenAI Gurus session with Marius Hobbhahn of Apollo Research, ["When Claude Code Goes Rogue: Real-Time Monitoring"](https://www.meetup.com/genai-gurus/events/314881167/). But software environments at least tend to give us logs, version history, access controls and recovery paths.
+
+With embodied AI, the problem becomes harder. When agents control robots, machines or physical processes, their actions involve motion, force, proximity to people, mechanical inertia and consequences that cannot simply be rolled back.
+
+The industrial robot-cell example in this post makes that problem concrete. A material-movement request must not become a direct leap from agent intent to machine motion. It should pass through a chain that can be inspected and, increasingly, verified: declared agent capabilities, governed tool access, a policy decision, an independent controller that still owns physical execution and evidence of what actually happened.
+
+That chain is what **AgenTrust** is being built to provide. It is an open-source trust layer for agentic systems, not another agent framework: a signed **Agent Manifest** binds what the agent is supposed to be; **cMCP** enforces Cedar policy at the MCP tool boundary and records a hash-chained audit trail; and **TRACE** defines portable trust records that an independent party can verify without relying on the agent operator's word. Hardware attestation is the step that roots those claims outside the software process itself.
+
+On June 23, Imran Siddique will unveil the stack at the Confidential Computing Summit in ["Governing AI Agents at the Hardware Boundary"](https://ccsummit2026.sched.com/event/2NKcF/governing-ai-agents-at-the-hardware-boundary-imran-siddique-microsoft). His thesis fits in one line: software governance makes promises; hardware governance provides proofs. I spent the past days building AgenTrust's first industrial embodied-AI example. This post walks through what the example establishes, what it deliberately does not claim and the exact line where agent governance must hand over to machine safety.
 
 ## TL;DR
 
-- **AgenTrust** is a new open-source agent-governance stack that builds on the lessons of the [Microsoft Agent Governance Toolkit](https://github.com/microsoft/agent-governance-toolkit): a signed **Agent Manifest** that binds an agent's prompt, policy and tool declarations to hashes; **cMCP**, a policy-enforcing MCP runtime with Cedar authorization and hash-chained audit; and **TRACE**, runtime-issued trust records you can verify offline. The full stack goes public around the June 23 summit; the [examples repository](https://github.com/agentrust-io/examples) is public today.
+- Agents can restart, forget and be replaced. Their accountability therefore cannot depend on the continuity of one process, one memory store or one operator-controlled log. It needs durable identity, policy and evidence that survive the runtime.
+- **AgenTrust** is a new open-source trust layer that builds on lessons from the [Microsoft Agent Governance Toolkit](https://github.com/microsoft/agent-governance-toolkit). A signed **Agent Manifest** binds the artifacts that define an agent; **cMCP** enforces Cedar authorization at the MCP tool boundary and creates a hash-chained audit trail; **TRACE** packages runtime, policy and tool evidence into a record that can be verified independently. The developer-preview projects are visible now and will be formally unveiled at the June 23 summit.
 - I contributed an [industrial embodied-AI example](https://github.com/agentrust-io/examples/pull/16): a material-movement agent requesting motion from a (simulated) robot cell. It runs three paths: a declared workflow that completes, an undeclared workflow that dies at the policy gate, and the important one: **a request the policy authorizes and the controller still refuses, because a person entered the safeguarded area.**
 - The central boundary, stated in the example itself: a cMCP `allow` means the software request was authorized. It does **not** mean a physical action is safe, accepted by the controller, or completed by a machine. Functional safety (ISO 13849, IEC 61508, ISO 10218) keeps owning the cell; agent governance sits above it and proves what was attempted, by whom, under which policy.
-- Why hardware proofs matter: today's agent controls (policy engines, identity, audit logs) live *inside* the agent's trust boundary. If the runtime is compromised, policies can be bypassed and logs forged. Trusted execution environments move enforcement and evidence outside the blast radius. For agents with actuators, that is the difference between an audit log and admissible evidence.
+- Why hardware proofs matter: today's agent controls (policy engines, identity, audit logs) live *inside* the agent's trust boundary. If the runtime is compromised, policies can be bypassed and logs forged. Trusted execution environments move enforcement and evidence outside the blast radius. For agents with actuators, that is the difference between an operator-controlled log and independently verifiable evidence.
 - If verification is your thing: this Thursday, **June 18**, GenAI Gurus hosts [Marius Hobbhahn, CEO of Apollo Research, on what thousands of real agent traces reveal when coding agents go rogue](https://www.meetup.com/genai-gurus/events/314881167/). This post is about proving what an agent *may* do; that session is about watching what agents *actually* do. They are two halves of the same problem.
 
-## Why this post exists
+## Why continuity changes the governance problem
 
-[Post #2 in this series](/2026/05/28/coding-agents-safely/) closed by crediting a May GenAI Gurus session with [Imran Siddique](https://www.linkedin.com/in/imransiddique1986/) on the Microsoft Agent Governance Toolkit and its policy-as-code approach. Two things happened since. Imran left Microsoft to become Chief Platform Officer at OPAQUE, working at the junction of agent governance and confidential computing. And he invited me to contribute to **AgenTrust**, the open-source project he is presenting at the Confidential Computing Summit, specifically to build out its coverage of *embodied AI systems in industrial environments*, working toward external maintainership of that area once the repositories are public.
+[Post #2 in this series](/2026/05/28/coding-agents-safely/) closed by crediting a May GenAI Gurus session with [Imran Siddique](https://www.linkedin.com/in/imransiddique1986/) on the Microsoft Agent Governance Toolkit and its policy-as-code approach. Two things happened since. Imran left Microsoft to become Chief Platform Officer at OPAQUE, working at the junction of agent governance and confidential computing. And he invited me to contribute to **AgenTrust**, the open-source project he is presenting at the Confidential Computing Summit, specifically to build out its coverage of *embodied AI systems in industrial environments* and work toward external maintainership of that area.
 
 This series has been walking toward that subject for a while, whether I planned it or not. [Post #1](/2026/04/10/eu-ai-act-compliance-checklist-for-ai-agent-developers/) was the paper layer: what the EU AI Act actually requires from agent developers. (Its high-risk timelines have since moved with the Digital Omnibus; the update is in the EU section below.) [Post #2](/2026/05/28/coding-agents-safely/) was the containment layer: how to run agents whose tools touch repositories and secrets. This post is the next step on the same road: agents whose tools move steel.
 
 The contribution is [PR #16 on agentrust-io/examples](https://github.com/agentrust-io/examples/pull/16), and everything below describes that public example. One disclosure up front: I contribute in a personal capacity, and the example is fully synthetic. No robot hardware, no vendor SDK, no production endpoint, no proprietary industrial data. What is real is the governance path: every request in this post went through a live cMCP runtime, and the committed evidence files were captured from a real run.
+
+## What AgenTrust is, and what it is not
+
+The Microsoft Agent Governance Toolkit (AGT) demonstrated how much can be done in software: policy at the action layer, agent identity and delegation, runtime controls, reliability signals and conformance tests across agent frameworks. It also exposed a ceiling. As Imran [put it after building AGT](https://www.linkedin.com/pulse/from-software-silicon-what-agt-taught-me-real-ceiling-imran-siddique-oolvc/), software enforcement cannot prove itself to a party that does not trust the operator. The same administrator who controls the runtime may be able to replace a policy, interfere with an evaluator or reconstruct a log.
+
+AgenTrust builds on that lesson. Its goal is not to replace the agent framework, model, MCP server or industrial controller. Its job is to bind those systems into a verifiable chain:
+
+| Component | Question it answers | Role in the chain |
+|---|---|---|
+| **Agent Manifest** | *What agent was approved?* | Cryptographically binds the artifacts that define an agent at deployment, including its prompt, policy, tool schemas, model identity, memory, provenance and human approvals. This example binds the prompt, policy and tool declarations relevant to the robot workflow. |
+| **cMCP** | *What was the agent allowed to do at the tool boundary?* | Intercepts MCP tool calls, evaluates Cedar policy, applies default-deny authorization and appends each decision to a hash-chained audit trail. In a hardware-backed deployment, enforcement and signing run inside a trusted execution environment (TEE). |
+| **TRACE** | *What evidence can another party verify?* | Defines a portable trust record for runtime identity, policy hashes, tool transcripts, provenance and attestation. A verifier can check the signed record without calling back to, or simply trusting, the operator that produced it. |
+
+Together, these components separate three ideas that are too often collapsed into the word "trust": **identity** (what agent is this?), **authority** (what may it request?) and **evidence** (what can be independently established afterward?). Hardware attestation adds a fourth: proof that the enforcement environment and its keys were protected from the software operator.
+
+The distinction matters because the robot example in this post runs in explicit `software-only` development mode. It demonstrates the manifest, policy, audit and verification path without pretending that a laptop run is hardware-attested. The same flow supports a `--require-hardware` mode on a compatible TEE host. That progression, from useful software controls to evidence rooted outside the controlled process, is the point of AgenTrust.
 
 ## The scenario: a material-movement agent asks a robot to move
 
@@ -199,7 +233,7 @@ A governance layer written in Python evaluating Cedar policies is not a safety f
 
 So far, everything described could run on any laptop, and that is precisely the limitation Imran's summit talk targets. The controls we rely on today (policy engines, identity checks, audit logs, credential vaults) all live *inside* the agent's trust boundary. If the runtime is compromised, policies can be bypassed and logs can be forged after the fact. Software governance, on its own, makes promises.
 
-Imran calls this [the real ceiling of software governance](https://www.linkedin.com/pulse/from-software-silicon-what-agt-taught-me-real-ceiling-imran-siddique-oolvc/): software enforcement cannot prove itself to someone who does not trust the operator, because an audit log is only as trustworthy as the system that generated it. AGT, with its 992 conformance tests and 20+ framework integrations, is what taught him where that ceiling sits. AgenTrust is the attempt to break through it.
+That is the ceiling AgenTrust is designed to move beyond: an audit log is only as trustworthy as the system that generated it, unless the identity, policy, enforcement environment and signing keys are anchored somewhere the operator cannot silently rewrite.
 
 The AgenTrust design pushes toward proofs, and the example shows the trajectory honestly:
 
@@ -245,7 +279,7 @@ Three dates, in order:
 
 - **Post 1:** [EU AI Act for AI Agent Developers: A Practical Compliance Checklist](/2026/04/10/eu-ai-act-compliance-checklist-for-ai-agent-developers/)
 - **Post 2:** [How to Run Coding Agents Safely in the Enterprise](/2026/05/28/coding-agents-safely/)
-- **Post 3:** Software Promises, Hardware Proofs: Governing an Industrial Robot Agent with AgenTrust *(this post)*
+- **Post 3:** Agents Can Restart. Accountability Cannot: Verifiable Trust for Embodied AI *(this post)*
 - **Post 4:** Code Is No Longer the Bottleneck. Verification Is *(coming soon)*
 - **Post 5:** From NIM to Jetson: A NeMo Guardrails Configuration Pack for Production Inference
 - **Post 6:** Open Weights, Real Obligations: Governing GPAI Models You Deploy but Didn't Train
