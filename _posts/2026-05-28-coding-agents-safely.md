@@ -298,7 +298,7 @@ This is post #2 in a series on practical AI governance for AI agent developers u
 - **Post 1:** [EU AI Act for AI Agent Developers: A Practical Compliance Checklist](/2026/04/10/eu-ai-act-compliance-checklist-for-ai-agent-developers/)
 - **Post 2:** How to Run Coding Agents Safely in the Enterprise *(this post)*
 - **Post 3:** [When Autonomous AI Agents Control Robots: The Real Threats No Safety System Detects](/2026/06/06/ten-thousand-safe-motions/), why machine safety cannot answer the agent-trust question
-- **Post 4:** [Agents Can Restart. Accountability Cannot: Verifiable Trust for Embodied AI](/2026/06/12/software-promises-hardware-proofs/), the architecture of this post applied to an agent whose tools move steel instead of code
+- **Post 4:** [Verifiable Trust for AI Agents That Control Robots: A Working Example with AgenTrust](/2026/06/12/software-promises-hardware-proofs/), the architecture of this post applied to an agent whose tools move steel instead of code
 - **Post 5:** Code Is No Longer the Bottleneck. Verification Is: A Survey of AI-Native Software Delivery in 2026
 - **Post 6:** From NIM to Jetson: A NeMo Guardrails Configuration Pack for Production Inference
 - **Post 7:** Open Weights, Real Obligations: Governing GPAI Models You Deploy but Didn't Train

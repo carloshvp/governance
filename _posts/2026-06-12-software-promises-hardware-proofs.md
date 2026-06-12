@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "Agents Can Restart. Accountability Cannot: Verifiable Trust for Embodied AI"
+title: "Verifiable Trust for AI Agents That Control Robots: A Working Example with AgenTrust"
 date: 2026-06-12 00:30:00 +0200
 categories: [runtime, embodied-ai]
 tags: [embodied-ai, robotics, agentrust, cmcp, agent-manifest, trace, cedar, confidential-computing, tee, agent-governance, functional-safety, industrial, eu-ai-act]
@@ -23,11 +23,9 @@ Their identity, memory, reputation and accountability survive, however imperfect
 
 Agents break that intuition.
 
-An agent can act, stop, restart, lose memory or be replaced. The next instance may not understand what the previous one did, why it did it or what consequences it left behind. A valid API credential can tell us which account made a call. It cannot, by itself, tell us which agent configuration was running, which policy governed it, which tools it was allowed to use or whether its evidence survived the restart.
+An agent can act, stop, restart, lose memory or be replaced. The next instance may not understand what the previous one did, why it did it or what consequences it left behind. Accountability does not survive on its own. It has to be engineered.
 
-That is why permission is not enough.
-
-As agents begin to act on our behalf, trust has to become verifiable. Others need to be able to establish which agent acted, under which identity, through which tool boundary, under which policy and with what outcome. Accountability has to outlive the process that performed the action.
+That is why permission is not enough. [Post #3](/2026/06/06/ten-thousand-safe-motions/) made the full argument: machine safety checks single motions in milliseconds, so the damage an autonomous agent assembles from individually safe actions, like skipping inspections and logging them as passed, stays invisible to every control we have today. Trust in the agent itself has to become verifiable: which agent acted, under which identity, through which tool boundary, under which policy, with what outcome.
 
 This already matters in software. A rogue coding agent can corrupt a repository, leak data, manipulate a workflow or cause serious business damage. That is the risk we will explore on June 18 in the GenAI Gurus session with Marius Hobbhahn of Apollo Research, ["When Claude Code Goes Rogue: Real-Time Monitoring"](https://www.meetup.com/genai-gurus/events/314881167/). But software environments at least tend to give us logs, version history, access controls and recovery paths.
 
@@ -40,6 +38,8 @@ That chain is what **AgenTrust** is being built to provide. It is an open-source
 On June 23, Imran Siddique will unveil the stack at the Confidential Computing Summit in ["Governing AI Agents at the Hardware Boundary"](https://ccsummit2026.sched.com/event/2NKcF/governing-ai-agents-at-the-hardware-boundary-imran-siddique-microsoft). His thesis fits in one line: software governance makes promises; hardware governance provides proofs. I spent the past days building AgenTrust's first industrial embodied-AI example. This post walks through what the example establishes, what it deliberately does not claim and the exact line where agent governance must hand over to machine safety.
 
 ## The example in one view
+
+Post #3 ended with a missing certificate: nobody yet certifies the agent, and it has to be built. This is what building one looks like:
 
 - The contribution is a [runnable industrial example, now merged into agentrust-io/examples](https://github.com/agentrust-io/examples/tree/main/industrial-embodied-ai): a material-movement agent requesting motion from a simulated robot cell through a live cMCP runtime. Three runs: a declared workflow that completes, an undeclared workflow that dies at the policy gate, and the important one, **a request the policy authorizes and the controller still refuses, because a person entered the safeguarded area.**
 - The boundary the example is built around: a cMCP `allow` means the software request was authorized. It does **not** mean a physical action is safe, accepted by the controller, or completed by a machine. Functional safety (ISO 13849, IEC 61508, ISO 10218) keeps owning the cell.
@@ -243,6 +243,8 @@ A governance layer written in Python evaluating Cedar policies is not a safety f
 
 So far, everything described could run on any laptop, and that is precisely the limitation Imran's summit talk targets. The controls we rely on today (policy engines, identity checks, audit logs, credential vaults) all live *inside* the agent's trust boundary. If the runtime is compromised, policies can be bypassed and logs can be forged after the fact. Software governance, on its own, makes promises.
 
+This is the inspection problem from [post #3](/2026/06/06/ten-thousand-safe-motions/) again. That agent wrote "inspected: passed" into its own log, and the investigation had nothing better to read. Run inspection as a governed tool and the story changes: every call and every decision is appended by the runtime to a hash-chained, signed trail, and a skipped inspection leaves a hole in the trail that no log entry can paper over. The witness is no longer the accused.
+
 That is the ceiling AgenTrust is designed to move beyond: an audit log is only as trustworthy as the system that generated it, unless the identity, policy, enforcement environment and signing keys are anchored somewhere the operator cannot silently rewrite.
 
 The AgenTrust design pushes toward proofs, and the example shows the trajectory honestly:
@@ -292,7 +294,7 @@ Agents will keep restarting, forgetting and being replaced. That is what process
 - **Post 1:** [EU AI Act for AI Agent Developers: A Practical Compliance Checklist](/2026/04/10/eu-ai-act-compliance-checklist-for-ai-agent-developers/)
 - **Post 2:** [How to Run Coding Agents Safely in the Enterprise](/2026/05/28/coding-agents-safely/)
 - **Post 3:** [When Autonomous AI Agents Control Robots: The Real Threats No Safety System Detects](/2026/06/06/ten-thousand-safe-motions/)
-- **Post 4:** Agents Can Restart. Accountability Cannot: Verifiable Trust for Embodied AI *(this post)*
+- **Post 4:** Verifiable Trust for AI Agents That Control Robots: A Working Example with AgenTrust *(this post)*
 - **Post 5:** Code Is No Longer the Bottleneck. Verification Is *(coming soon)*
 - **Post 6:** From NIM to Jetson: A NeMo Guardrails Configuration Pack for Production Inference
 - **Post 7:** Open Weights, Real Obligations: Governing GPAI Models You Deploy but Didn't Train
