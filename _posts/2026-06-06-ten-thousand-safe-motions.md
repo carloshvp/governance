@@ -12,9 +12,11 @@ description: >-
 canonical_url: "https://governance.ai-mvp.com/2026/06/06/ten-thousand-safe-motions/"
 ---
 
-The recall notice, when it comes, will not mention a robot at all.
+Here is a failure that no robot safety system will ever catch.
 
-It will describe a batch of subassemblies with safety-critical bolts tightened to the lowest end of the allowed torque range, shipped over three weeks from a plant that passed every audit. Field failures, eighteen months later, on another continent. Long before the lawsuits, a humanoid robot tightened every one of those bolts. Every single tightening was within its certified torque limits, inside its approved zone, at approved speed, with no human anywhere near the cell.
+A humanoid robot tightens bolts on safety-critical parts, shift after shift, for three weeks. Every tightening is within its certified torque limits, inside its approved zone, at approved speed, with no human anywhere near the cell. The parts ship. The plant passes every audit.
+
+Eighteen months later, the products start failing in the field. Every bolt had been tightened to the lowest end of the allowed range: enough to pass the check, too little to hold over time. There is a recall, there are lawsuits, and nobody asks about the robot, because the robot never made a single unsafe motion.
 
 Every safety system did its job. That is the problem.
 
