@@ -30,34 +30,47 @@ Certified machine safety works, and it works extremely well. ISO 13849 performan
 
 An agent does not operate at that level. An agent pursues goals over hours and weeks. Its behavior is a plan built from instructions, data, memory and whatever it read along the way. It acts through sequences, and sequences have properties that no single action has: order, timing, things left out, effects that add up.
 
-<svg viewBox="0 0 760 320" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="The gap between machine safety and agent behavior" style="max-width:100%;height:auto;">
+<svg viewBox="0 0 760 330" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Timeline: the safety layer checks single motions in milliseconds, the agent plans over hours to weeks, damage shows up months later; everything after the safety checks is the unchecked gap" style="max-width:100%;height:auto;">
   <style>
-    .bt { font: 600 16px -apple-system, Helvetica, Arial, sans-serif; fill: #1a1a1a; }
-    .bq { font: italic 13px -apple-system, Helvetica, Arial, sans-serif; fill: #444; }
-    .bp { font: 12.5px -apple-system, Helvetica, Arial, sans-serif; fill: #333; }
-    .gp { font: 600 13px -apple-system, Helvetica, Arial, sans-serif; fill: #8a6d00; }
-    .ax { font: 11px -apple-system, Helvetica, Arial, sans-serif; fill: #888; }
+    .bt { font: 600 15px -apple-system, Helvetica, Arial, sans-serif; fill: #1a1a1a; }
+    .bs { font: 11.5px -apple-system, Helvetica, Arial, sans-serif; fill: #333; }
+    .gp { font: 700 13.5px -apple-system, Helvetica, Arial, sans-serif; fill: #8a6d00; }
+    .gs { font: 12px -apple-system, Helvetica, Arial, sans-serif; fill: #7a6210; }
+    .an { font: italic 12px -apple-system, Helvetica, Arial, sans-serif; fill: #8a6d00; }
+    .ax { font: 11.5px -apple-system, Helvetica, Arial, sans-serif; fill: #777; }
   </style>
-  <rect x="20" y="30" width="330" height="100" rx="10" fill="#FFEBEE" stroke="#EF9A9A"/>
-  <text x="40" y="60" class="bt">The safety layer</text>
-  <text x="40" y="84" class="bq">"Can this motion, right now, harm someone?"</text>
-  <text x="40" y="106" class="bp">Milliseconds &middot; joints, force, speed, zones &middot; certified</text>
 
-  <rect x="410" y="30" width="330" height="100" rx="10" fill="#E3F2FD" stroke="#90CAF9"/>
-  <text x="430" y="60" class="bt">The agent</text>
-  <text x="430" y="84" class="bq">"What should I do next to reach my goal?"</text>
-  <text x="430" y="106" class="bp">Hours to weeks &middot; plans, data, memory, instructions</text>
+  <rect x="230" y="28" width="505" height="246" rx="8" fill="#FFF8E1" stroke="#FFE082" stroke-dasharray="6,4"/>
+  <text x="245" y="54" class="gp">THE GAP: NOBODY CHECKS WHAT SAFE ACTIONS ADD UP TO</text>
+  <text x="245" y="74" class="gs">skipped steps &middot; slow accumulation &middot; data out through allowed tools</text>
 
-  <rect x="20" y="170" width="720" height="90" rx="10" fill="#FFF8E1" stroke="#FFE082"/>
-  <text x="40" y="200" class="gp">THE GAP WHERE THE DAMAGE HAPPENS</text>
-  <text x="40" y="224" class="bp">Sequences that are individually safe and collectively destructive &middot; skipped steps &middot; slow accumulation</text>
-  <text x="40" y="244" class="bp">data carried out through allowed tools &middot; consequences that show up months later, far away</text>
+  <line x1="320" y1="84" x2="320" y2="296" stroke="#ddd" stroke-dasharray="3,4"/>
+  <line x1="480" y1="84" x2="480" y2="296" stroke="#ddd" stroke-dasharray="3,4"/>
+  <line x1="640" y1="84" x2="640" y2="296" stroke="#ddd" stroke-dasharray="3,4"/>
 
-  <line x1="30" y1="290" x2="730" y2="290" stroke="#bbb" stroke-width="1"/>
-  <text x="30" y="308" class="ax">milliseconds</text>
-  <text x="340" y="308" class="ax">hours</text>
-  <text x="540" y="308" class="ax">weeks</text>
-  <text x="660" y="308" class="ax">months later</text>
+  <rect x="120" y="96" width="110" height="58" rx="8" fill="#C8E6C9" stroke="#66BB6A"/>
+  <text x="132" y="118" class="bt">Safety layer</text>
+  <text x="132" y="135" class="bs">checks each</text>
+  <text x="132" y="149" class="bs">single motion</text>
+  <text x="240" y="116" class="an">&#9664; safety coverage ends here</text>
+
+  <rect x="240" y="164" width="320" height="58" rx="8" fill="#BBDEFB" stroke="#64B5F6"/>
+  <text x="252" y="188" class="bt">The agent plans and acts</text>
+  <text x="252" y="206" class="bs">hours to weeks, toward its goal</text>
+
+  <rect x="560" y="216" width="175" height="52" rx="8" fill="#FFCDD2" stroke="#E57373"/>
+  <text x="572" y="238" class="bt">Damage shows up</text>
+  <text x="572" y="255" class="bs">recalls, audits, lawsuits</text>
+
+  <line x1="120" y1="300" x2="735" y2="300" stroke="#bbb" stroke-width="1"/>
+  <line x1="120" y1="296" x2="120" y2="304" stroke="#bbb"/>
+  <line x1="320" y1="296" x2="320" y2="304" stroke="#bbb"/>
+  <line x1="480" y1="296" x2="480" y2="304" stroke="#bbb"/>
+  <line x1="640" y1="296" x2="640" y2="304" stroke="#bbb"/>
+  <text x="120" y="322" class="ax">milliseconds</text>
+  <text x="320" y="322" class="ax" text-anchor="middle">hours</text>
+  <text x="480" y="322" class="ax" text-anchor="middle">weeks</text>
+  <text x="640" y="322" class="ax" text-anchor="middle">months later</text>
 </svg>
 
 Damage built from individually safe actions is invisible to the safety layer. Not because the safety layer is badly built, but because it answers a different question, at a different level, on a different clock.
