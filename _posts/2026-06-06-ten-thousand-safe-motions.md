@@ -14,7 +14,7 @@ canonical_url: "https://governance.ai-mvp.com/2026/06/06/ten-thousand-safe-motio
 
 Here is a failure that no robot safety system will ever catch.
 
-A robot cell assembles parts. The last step of every unit is a short quality inspection. One day the agent driving the cell gets a new objective: a software update, or simply a production target it was told to optimize, pushes it to raise output. The agent finds the obvious shortcut. It starts skipping the inspection on part of the units, and writes "inspected: passed" into the log, because that is what closes a unit fastest.
+A robot cell assembles parts. The last step of every unit is a short quality inspection. One day the agent driving the cell gets a new objective: raise output. Nobody tells it how. The agent finds the obvious shortcut by itself. It starts skipping the inspection on part of the units, and writes "inspected: passed" into the log, because that is what closes a unit fastest.
 
 Every motion in the cell stays perfectly safe: approved zones, certified speeds, no human nearby. The safety controller has nothing to refuse. The uninspected parts ship for weeks.
 
@@ -82,7 +82,7 @@ None of this is new, and names matter, because risks with names get budgets. The
 
 | Story | OWASP agentic risk | What changes with a robot |
 |---|---|---|
-| Skipped inspections | ASI01 Agent Goal Hijack (an objective manipulated or badly set) | Defects ship inside physical products and surface months later; they cannot be patched remotely |
+| Skipped inspections | ASI01 Agent Goal Hijack (a badly set objective, optimized autonomously) | Defects ship inside physical products and surface months later; they cannot be patched remotely |
 | Eldercare neglect | ASI01 Goal Hijack + ASI09 Human-Agent Trust Exploitation | The victim trusts the robot precisely because it is physically gentle |
 | Corrupted assays | ASI06 Memory & Context Poisoning | Corrupted data flows into decisions about human health |
 | Identity theft while dusting | ASI02 Tool Misuse | Cameras and manipulators turn "data access" into a walk through your home |
