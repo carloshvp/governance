@@ -60,7 +60,7 @@ Nothing in that table mentions robots. The table is about agents, full stop. Rob
 
 [Post #2 in this series](/2026/05/28/coding-agents-safely/) closed by crediting a May GenAI Gurus session with [Imran Siddique](https://www.linkedin.com/in/imransiddique1986/) on the Microsoft Agent Governance Toolkit and its policy-as-code approach. Two things happened since. Imran left Microsoft to become Chief Platform Officer at OPAQUE, working at the junction of agent governance and confidential computing. And he invited me to contribute to **AgenTrust**, the open-source project he is presenting at the Confidential Computing Summit, specifically to build out its coverage of *embodied AI systems in industrial environments* and work toward external maintainership of that area.
 
-This series has been walking toward that subject for a while, whether I planned it or not. [Post #1](/2026/04/10/eu-ai-act-compliance-checklist-for-ai-agent-developers/) was the paper layer: what the EU AI Act actually requires from agent developers. (Its high-risk timelines have since moved with the Digital Omnibus; the update is in the EU section below.) [Post #2](/2026/05/28/coding-agents-safely/) was the containment layer: how to run agents whose tools touch repositories and secrets. This post is the next step on the same road: agents whose tools move steel.
+This series has been walking toward that subject for a while, whether I planned it or not. [Post #1](/2026/04/10/eu-ai-act-compliance-checklist-for-ai-agent-developers/) was the paper layer: what the EU AI Act actually requires from agent developers. (Its high-risk timelines have since moved with the Digital Omnibus; the update is in the EU section below.) [Post #2](/2026/05/28/coding-agents-safely/) was the containment layer: how to run agents whose tools touch repositories and secrets. [Post #3](/2026/06/06/ten-thousand-safe-motions/) made the argument: certified machine safety cannot see the damage untrusted agents assemble from individually safe actions, so agent trust has to be built as its own layer. This post builds the thing the argument demands: agents whose tools move steel.
 
 The contribution is merged: [`industrial-embodied-ai` on agentrust-io/examples](https://github.com/agentrust-io/examples/tree/main/industrial-embodied-ai). Everything below describes that public example. One disclosure up front: I contribute in a personal capacity, and the example is fully synthetic. No robot hardware, no vendor SDK, no production endpoint, no proprietary industrial data. What is real is the governance path: every request in this post went through a live cMCP runtime, and the committed evidence files were captured from a real run.
 
@@ -291,12 +291,13 @@ Agents will keep restarting, forgetting and being replaced. That is what process
 
 - **Post 1:** [EU AI Act for AI Agent Developers: A Practical Compliance Checklist](/2026/04/10/eu-ai-act-compliance-checklist-for-ai-agent-developers/)
 - **Post 2:** [How to Run Coding Agents Safely in the Enterprise](/2026/05/28/coding-agents-safely/)
-- **Post 3:** Agents Can Restart. Accountability Cannot: Verifiable Trust for Embodied AI *(this post)*
-- **Post 4:** Code Is No Longer the Bottleneck. Verification Is *(coming soon)*
-- **Post 5:** From NIM to Jetson: A NeMo Guardrails Configuration Pack for Production Inference
-- **Post 6:** Open Weights, Real Obligations: Governing GPAI Models You Deploy but Didn't Train
-- **Post 7:** Sovereign AI Infrastructure: Governance Patterns for On-Prem and European Cloud
-- **Post 8:** The Contributor Journey: Building an Open-Source Agent Governance Layer
+- **Post 3:** [Ten Thousand Safe Motions: Where Untrusted Agents Do Their Damage](/2026/06/06/ten-thousand-safe-motions/)
+- **Post 4:** Agents Can Restart. Accountability Cannot: Verifiable Trust for Embodied AI *(this post)*
+- **Post 5:** Code Is No Longer the Bottleneck. Verification Is *(coming soon)*
+- **Post 6:** From NIM to Jetson: A NeMo Guardrails Configuration Pack for Production Inference
+- **Post 7:** Open Weights, Real Obligations: Governing GPAI Models You Deploy but Didn't Train
+- **Post 8:** Sovereign AI Infrastructure: Governance Patterns for On-Prem and European Cloud
+- **Post 9:** The Contributor Journey: Building an Open-Source Agent Governance Layer
 
 The full series lives at [governance.ai-mvp.com](https://governance.ai-mvp.com).
 

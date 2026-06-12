@@ -17,9 +17,10 @@ Written by [Carlos Hernandez](https://www.linkedin.com/in/carloshvp), founder of
 |---|------|--------|
 | 1 | [EU AI Act for AI Agent Developers: A Practical Compliance Checklist](/2026/04/10/eu-ai-act-compliance-checklist-for-ai-agent-developers/) | Published |
 | 2 | [How to Run Coding Agents Safely in the Enterprise](/2026/05/28/coding-agents-safely/) | Published |
-| 3 | [Agents Can Restart. Accountability Cannot: Verifiable Trust for Embodied AI](/2026/06/12/software-promises-hardware-proofs/) | Published |
-| 4 | Code Is No Longer the Bottleneck. Verification Is: A Survey of AI-Native Software Delivery in 2026 | Coming soon |
-| 5 | From NIM to Jetson: A NeMo Guardrails Configuration Pack for Production Inference | Coming soon |
-| 6 | Open Weights, Real Obligations: Governing GPAI Models You Deploy but Didn't Train | Coming soon |
-| 7 | Sovereign AI Infrastructure: Governance Patterns for On-Prem and European Cloud | Coming soon |
-| 8 | The Contributor Journey: Building an Open-Source Agent Governance Layer | Coming soon |
+| 3 | [Ten Thousand Safe Motions: Where Untrusted Agents Do Their Damage](/2026/06/06/ten-thousand-safe-motions/) | Published |
+| 4 | [Agents Can Restart. Accountability Cannot: Verifiable Trust for Embodied AI](/2026/06/12/software-promises-hardware-proofs/) | Published |
+| 5 | Code Is No Longer the Bottleneck. Verification Is: A Survey of AI-Native Software Delivery in 2026 | Coming soon |
+| 6 | From NIM to Jetson: A NeMo Guardrails Configuration Pack for Production Inference | Coming soon |
+| 7 | Open Weights, Real Obligations: Governing GPAI Models You Deploy but Didn't Train | Coming soon |
+| 8 | Sovereign AI Infrastructure: Governance Patterns for On-Prem and European Cloud | Coming soon |
+| 9 | The Contributor Journey: Building an Open-Source Agent Governance Layer | Coming soon |
