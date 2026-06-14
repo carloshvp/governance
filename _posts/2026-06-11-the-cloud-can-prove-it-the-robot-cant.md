@@ -1,12 +1,12 @@
 ---
 layout: post
 title: "The Cloud Can Prove It. The Robot Can't."
-date: 2026-06-13 08:00:00 +0200
+date: 2026-06-11 09:00:00 +0200
 categories: [runtime, embodied-ai]
 tags: [embodied-ai, robotics, agentrust, confidential-computing, tee, nvidia-thor, attestation, edge-ai, eu-ai-act]
 description: >-
   On a humanoid, the action happens where hardware trust is weakest. NVIDIA Jetson Thor has no GPU confidential computing, so agent trust must be engineered across an asymmetric cloud-to-edge boundary.
-canonical_url: "https://governance.ai-mvp.com/2026/06/13/the-cloud-can-prove-it-the-robot-cant/"
+canonical_url: "https://governance.ai-mvp.com/2026/06/11/the-cloud-can-prove-it-the-robot-cant/"
 ---
 
 <script type="module">
@@ -17,7 +17,7 @@ canonical_url: "https://governance.ai-mvp.com/2026/06/13/the-cloud-can-prove-it-
 *Where to anchor agent trust on a humanoid robot when the on-board GPU (NVIDIA Thor) has no confidential computing — and the reasoning that drove the motion lives in a datacenter that does.*
 
 > Series: The Engineering of AI Governance — Post 5
-> Continues from [Software Promises, Hardware Proofs](https://governance.ai-mvp.com/2026/06/12/software-promises-hardware-proofs/) and [Ten Thousand Safe Motions](https://governance.ai-mvp.com/2026/06/06/ten-thousand-safe-motions/)
+> Continues from [Software Promises, Hardware Proofs](https://governance.ai-mvp.com/2026/06/08/software-promises-hardware-proofs/) and [Ten Thousand Safe Motions](https://governance.ai-mvp.com/2026/06/06/ten-thousand-safe-motions/)
 > Strategic companion (robotics.ai-mvp.com): [Trust Becomes the Next Moat in the Humanoid Race](https://robotics.ai-mvp.com/notes/010-the-trust-stack/) — the same problem framed for operators and investors.
 
 ---

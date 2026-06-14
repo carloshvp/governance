@@ -11,6 +11,7 @@ github_username: carloshvp
 linkedin_username: carloshvp
 
 timezone: Europe/Berlin
+future: true
 
 theme: minima
 

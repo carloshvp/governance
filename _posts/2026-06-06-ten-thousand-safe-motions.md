@@ -137,7 +137,7 @@ It has to be built.
 - **Post 1:** [EU AI Act for AI Agent Developers: A Practical Compliance Checklist](/2026/04/10/eu-ai-act-compliance-checklist-for-ai-agent-developers/)
 - **Post 2:** [How to Run Coding Agents Safely in the Enterprise](/2026/05/28/coding-agents-safely/)
 - **Post 3:** When Autonomous AI Agents Control Robots: The Real Threats No Safety System Detects *(this post)*
-- **Post 4:** [Verifiable Trust for AI Agents That Control Robots: A Working Example with AgenTrust](/2026/06/12/software-promises-hardware-proofs/), the running example this post argues for
+- **Post 4:** [Verifiable Trust for AI Agents That Control Robots: A Working Example with AgenTrust](/2026/06/08/software-promises-hardware-proofs/), the running example this post argues for
 - **Post 5:** Code Is No Longer the Bottleneck. Verification Is *(coming soon)*
 
 The full series lives at [governance.ai-mvp.com](https://governance.ai-mvp.com).

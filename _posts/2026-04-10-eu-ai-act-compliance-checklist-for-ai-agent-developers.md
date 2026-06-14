@@ -14,7 +14,7 @@ description: >-
   mermaid.initialize({ startOnLoad: true, theme: 'neutral', securityLevel: 'loose' });
 </script>
 
-*Update, June 12, 2026: the Digital Omnibus political agreement moves the EU AI Act's high-risk deadlines referenced in this post from August 2, 2026 to December 2, 2027 (stand-alone high-risk systems) and August 2, 2028 (high-risk systems embedded in products), subject to final adoption. AI-enabled machinery is expected to be handled through the Machinery Regulation route instead of the AI Act's direct high-risk regime. The controls and artifacts in this checklist are unchanged; the dates are not. See the regulatory note in [post #4](/2026/06/12/software-promises-hardware-proofs/).*
+*Update, June 12, 2026: the Digital Omnibus political agreement moves the EU AI Act's high-risk deadlines referenced in this post from August 2, 2026 to December 2, 2027 (stand-alone high-risk systems) and August 2, 2028 (high-risk systems embedded in products), subject to final adoption. AI-enabled machinery is expected to be handled through the Machinery Regulation route instead of the AI Act's direct high-risk regime. The controls and artifacts in this checklist are unchanged; the dates are not. See the regulatory note in [post #4](/2026/06/08/software-promises-hardware-proofs/).*
 
 <style>
 .terminal-window {
@@ -466,7 +466,7 @@ Every section above flagged at least one gap. This is expected. The Agent Govern
 This is the first post in a series on practical AI governance for AI agent developers using Microsoft's Agent Governance Toolkit and related open-source primitives:
 
 - **Post 2:** [How to Run Coding Agents Safely in the Enterprise](/2026/05/28/coding-agents-safely/), a reference architecture for adopting Codex, Claude Code, Copilot, and Cursor without burning your secrets, your IP, or your audit story
-- **Post 3:** [Agents Can Restart. Accountability Cannot: Verifiable Trust for Embodied AI](/2026/06/12/software-promises-hardware-proofs/), where the Article 12 logging and Article 14 oversight artifacts from this checklist run against a robot cell, and machine safety stays with the certified layer
+- **Post 3:** [Agents Can Restart. Accountability Cannot: Verifiable Trust for Embodied AI](/2026/06/08/software-promises-hardware-proofs/), where the Article 12 logging and Article 14 oversight artifacts from this checklist run against a robot cell, and machine safety stays with the certified layer
 - **Post 4:** Code Is No Longer the Bottleneck. Verification Is: A Survey of AI-Native Software Delivery in 2026
 - **Post 5:** From NIM to Jetson: A NeMo Guardrails Configuration Pack for Production Inference
 - **Post 6:** Open Weights, Real Obligations: Governing GPAI Models You Deploy but Didn't Train

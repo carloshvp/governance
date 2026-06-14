@@ -18,11 +18,11 @@ Written by [Carlos Hernandez](https://www.linkedin.com/in/carloshvp), founder of
 | 1 | [EU AI Act for AI Agent Developers: A Practical Compliance Checklist](/2026/04/10/eu-ai-act-compliance-checklist-for-ai-agent-developers/) | Published |
 | 2 | [How to Run Coding Agents Safely in the Enterprise](/2026/05/28/coding-agents-safely/) | Published |
 | 3 | [When Autonomous AI Agents Control Robots: The Real Threats No Safety System Detects](/2026/06/06/ten-thousand-safe-motions/) | Published |
-| 4 | [Verifiable Trust for AI Agents That Control Robots: A Working Example with AgenTrust](/2026/06/12/software-promises-hardware-proofs/) | Published |
-| 5 | [The Cloud Can Prove It. The Robot Can't.](/2026/06/13/the-cloud-can-prove-it-the-robot-cant/) | Published |
-| 6 | [Proof of Outcome: Did the Robot Actually Do It?](/2026/06/13/proof-of-outcome/) | Published |
-| 7 | [Trust at Fleet Scale: The Skill That Spreads](/2026/06/14/trust-at-fleet-scale/) | Published |
-| 8 | [Trusting the Skills You Didn't Write](/2026/06/14/trusting-the-skills-you-didnt-write/) | Published |
+| 4 | [Verifiable Trust for AI Agents That Control Robots: A Working Example with AgenTrust](/2026/06/08/software-promises-hardware-proofs/) | Published |
+| 5 | [The Cloud Can Prove It. The Robot Can't.](/2026/06/11/the-cloud-can-prove-it-the-robot-cant/) | Published |
+| 6 | [Proof of Outcome: Did the Robot Actually Do It?](/2026/06/14/proof-of-outcome/) | Published |
+| 7 | [Trust at Fleet Scale: The Skill That Spreads](/2026/06/17/trust-at-fleet-scale/) | Published |
+| 8 | [Trusting the Skills You Didn't Write](/2026/06/19/trusting-the-skills-you-didnt-write/) | Published |
 | 9 | Code Is No Longer the Bottleneck. Verification Is: A Survey of AI-Native Software Delivery in 2026 | Coming soon |
 | 10 | From NIM to Jetson: A NeMo Guardrails Configuration Pack for Production Inference | Coming soon |
 | 11 | Open Weights, Real Obligations: Governing GPAI Models You Deploy but Didn't Train | Coming soon |

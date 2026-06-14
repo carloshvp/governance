@@ -1,18 +1,18 @@
 ---
 layout: post
 title: "Proof of Outcome: Did the Robot Actually Do It?"
-date: 2026-06-13 09:00:00 +0200
+date: 2026-06-14 09:00:00 +0200
 categories: [runtime, embodied-ai]
 tags: [embodied-ai, robotics, agentrust, proof-of-outcome, tamper-evident, sensor-attestation, flight-recorder, eu-ai-act]
 description: >-
   An authorization log proves a robot was allowed to move, not that it did. Closing the response-hash gap with sensor-witnessed, tamper-evident outcome evidence.
-canonical_url: "https://governance.ai-mvp.com/2026/06/13/proof-of-outcome/"
+canonical_url: "https://governance.ai-mvp.com/2026/06/14/proof-of-outcome/"
 ---
 
 *Your audit proves the robot was allowed to move. It does not prove the robot moved — or that the world changed the way the agent claims. This is the gap that decides whether your evidence is worth anything to an insurer.*
 
 > Series: The Engineering of AI Governance — Post 6
-> Continues from [The Cloud Can Prove It. The Robot Can't.](https://governance.ai-mvp.com/2026/06/13/the-cloud-can-prove-it-the-robot-cant/)
+> Continues from [The Cloud Can Prove It. The Robot Can't.](https://governance.ai-mvp.com/2026/06/11/the-cloud-can-prove-it-the-robot-cant/)
 > Interactive: this post has three widgets you can play with. They're the point — read with your hands.
 > Status: this extends AgenTrust's existing primitives (manifest, cMCP, TRACE); the specific mechanisms proposed here are design proposals for discussion, not shipped features.
 

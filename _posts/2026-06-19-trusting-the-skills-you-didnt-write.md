@@ -1,18 +1,18 @@
 ---
 layout: post
 title: "Trusting the Skills You Didn't Write"
-date: 2026-06-14 09:00:00 +0200
+date: 2026-06-19 09:00:00 +0200
 categories: [runtime, embodied-ai]
 tags: [embodied-ai, robotics, agentrust, marketplace, provenance, slsa, cedar, default-deny, eu-ai-act]
 description: >-
   A robot's brain is a foundation model you didn't train and skills from a marketplace anyone can publish to. Provenance, default-deny capability scoping, and a fleet-wide kill switch.
-canonical_url: "https://governance.ai-mvp.com/2026/06/14/trusting-the-skills-you-didnt-write/"
+canonical_url: "https://governance.ai-mvp.com/2026/06/19/trusting-the-skills-you-didnt-write/"
 ---
 
 *The first two posts assumed you wrote the software. You didn't. The brain is a foundation model you didn't train; the skills come from a marketplace anyone can publish to. The ecosystem is your moat and your largest attack surface — at the same time.*
 
 > Series: The Engineering of AI Governance — Post 8
-> Continues from [Proof of Outcome](https://governance.ai-mvp.com/2026/06/13/proof-of-outcome/) and [Trust at Fleet Scale](https://governance.ai-mvp.com/2026/06/14/trust-at-fleet-scale/). Final post of the trust trilogy.
+> Continues from [Proof of Outcome](https://governance.ai-mvp.com/2026/06/14/proof-of-outcome/) and [Trust at Fleet Scale](https://governance.ai-mvp.com/2026/06/17/trust-at-fleet-scale/). Final post of the trust trilogy.
 > Interactive: three widgets. The capability explorer is the one to push on.
 > Status: this extends AgenTrust's existing primitives (manifest, cMCP, TRACE); the specific mechanisms proposed here are design proposals for discussion, not shipped features.
 

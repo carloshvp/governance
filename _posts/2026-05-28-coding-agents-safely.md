@@ -29,7 +29,7 @@ The DMs that followed surprised me. Various known and first-met security leads, 
 
 It also builds directly on two GenAI Gurus community sessions that shaped my thinking: an April session with **[Maxim Vovshin](https://www.linkedin.com/in/maxim-vovshin-a5a0a5164/)** on personal agents and the safety patterns he uses to keep them bounded, and a May session with **[Imran Siddique](https://www.linkedin.com/in/imransiddique1986/)** (Principal Engineering Leader at Microsoft) on the Microsoft Agent Governance Toolkit (AGT) and its policy-as-code approach. Both are linked at the end. The architecture below would not exist without those conversations.
 
-*Update, June 12, 2026: that May session turned into a collaboration. Imran, now Chief Platform Officer at OPAQUE, invited me to contribute the first industrial embodied-AI example to AgenTrust, the open-source stack he presents at the Confidential Computing Summit on June 23. The argument for why this matters is [post #3](/2026/06/06/ten-thousand-safe-motions/); the resulting build, and what it says about governing agents whose tools touch the physical world, is [post #4 in this series](/2026/06/12/software-promises-hardware-proofs/).*
+*Update, June 12, 2026: that May session turned into a collaboration. Imran, now Chief Platform Officer at OPAQUE, invited me to contribute the first industrial embodied-AI example to AgenTrust, the open-source stack he presents at the Confidential Computing Summit on June 23. The argument for why this matters is [post #3](/2026/06/06/ten-thousand-safe-motions/); the resulting build, and what it says about governing agents whose tools touch the physical world, is [post #4 in this series](/2026/06/08/software-promises-hardware-proofs/).*
 
 ## The post that changed the conversation
 
@@ -298,7 +298,7 @@ This is post #2 in a series on practical AI governance for AI agent developers u
 - **Post 1:** [EU AI Act for AI Agent Developers: A Practical Compliance Checklist](/2026/04/10/eu-ai-act-compliance-checklist-for-ai-agent-developers/)
 - **Post 2:** How to Run Coding Agents Safely in the Enterprise *(this post)*
 - **Post 3:** [When Autonomous AI Agents Control Robots: The Real Threats No Safety System Detects](/2026/06/06/ten-thousand-safe-motions/), why machine safety cannot answer the agent-trust question
-- **Post 4:** [Verifiable Trust for AI Agents That Control Robots: A Working Example with AgenTrust](/2026/06/12/software-promises-hardware-proofs/), the architecture of this post applied to an agent whose tools move steel instead of code
+- **Post 4:** [Verifiable Trust for AI Agents That Control Robots: A Working Example with AgenTrust](/2026/06/08/software-promises-hardware-proofs/), the architecture of this post applied to an agent whose tools move steel instead of code
 - **Post 5:** Code Is No Longer the Bottleneck. Verification Is: A Survey of AI-Native Software Delivery in 2026
 - **Post 6:** From NIM to Jetson: A NeMo Guardrails Configuration Pack for Production Inference
 - **Post 7:** Open Weights, Real Obligations: Governing GPAI Models You Deploy but Didn't Train

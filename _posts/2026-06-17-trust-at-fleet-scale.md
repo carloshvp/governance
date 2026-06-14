@@ -1,18 +1,18 @@
 ---
 layout: post
 title: "Trust at Fleet Scale: the Skill That Spreads"
-date: 2026-06-14 08:00:00 +0200
+date: 2026-06-17 09:00:00 +0200
 categories: [runtime, embodied-ai]
 tags: [embodied-ai, robotics, agentrust, fleet, identity, revocation, trust-propagation, blast-radius, eu-ai-act]
 description: >-
   Trust that works for one robot is a demo. Per-unit identity, fast revocation, and bounding the blast radius of a poisoned skill that spreads through a fleet's networked learning.
-canonical_url: "https://governance.ai-mvp.com/2026/06/14/trust-at-fleet-scale/"
+canonical_url: "https://governance.ai-mvp.com/2026/06/17/trust-at-fleet-scale/"
 ---
 
 *Trust that works for one robot is a demo. A business is a fleet — and a fleet that shares what it learns can share a compromise just as fast. Identity, revocation, and the worm nobody designs for.*
 
 > Series: The Engineering of AI Governance — Post 7
-> Continues from [Proof of Outcome](https://governance.ai-mvp.com/2026/06/13/proof-of-outcome/)
+> Continues from [Proof of Outcome](https://governance.ai-mvp.com/2026/06/14/proof-of-outcome/)
 > Interactive: three widgets. The blast-radius simulator is the one to play with.
 > Status: this extends AgenTrust's existing primitives (manifest, cMCP, TRACE); the specific mechanisms proposed here are design proposals for discussion, not shipped features.
 

@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "Verifiable Trust for AI Agents That Control Robots: A Working Example with AgenTrust"
-date: 2026-06-12 00:30:00 +0200
+date: 2026-06-08 09:00:00 +0200
 categories: [runtime, embodied-ai]
 tags: [embodied-ai, robotics, agentrust, cmcp, agent-manifest, trace, cedar, confidential-computing, tee, agent-governance, functional-safety, industrial, eu-ai-act]
 description: >-
@@ -9,7 +9,7 @@ description: >-
   industrial robot-cell example shows how AgenTrust binds agent identity,
   policy-enforced MCP access and verifiable evidence without confusing software
   authorization with physical safety.
-canonical_url: "https://governance.ai-mvp.com/2026/06/12/software-promises-hardware-proofs/"
+canonical_url: "https://governance.ai-mvp.com/2026/06/08/software-promises-hardware-proofs/"
 ---
 
 <script type="module">
