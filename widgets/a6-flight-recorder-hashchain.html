@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tamper-evident flight recorder</title>
+</head>
+<body>
+<style>
+.fr{--ink:#1f2421;--muted:#6b7280;--line:#e6e6e2;--bg:#fff;--surface:#f7f7f5;--teal:#0f6e56;--tealbg:#e1f5ee;--red:#a32d2d;--redbg:#fcebeb;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;color:var(--ink);line-height:1.5;max-width:680px;margin:0 auto;padding:8px 0;}
+.fr h3{font-size:16px;font-weight:500;margin:0 0 4px;}
+.fr .sub{color:var(--muted);font-size:13px;margin:0 0 16px;}
+.fr .blk{border:1px solid var(--line);border-radius:10px;padding:10px 12px;background:var(--surface);margin:8px 0;}
+.fr .blk.broken{border-color:var(--red);background:var(--redbg);}
+.fr .seq{font-size:12px;color:var(--muted);}
+.fr input.val{width:100%;font:inherit;font-size:13px;padding:6px 8px;border:1px solid var(--line);border-radius:7px;background:var(--bg);color:var(--ink);margin:4px 0;box-sizing:border-box;}
+.fr .hash{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px;color:var(--muted);word-break:break-all;}
+.fr .hash b{color:var(--ink);font-weight:500;}
+.fr .mono{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;}
+.fr .x{color:var(--red);}
+.fr .verdict{margin-top:14px;padding:11px 14px;border-radius:10px;font-size:14px;}
+.fr .ok{background:var(--tealbg);color:var(--teal);}
+.fr .bad{background:var(--redbg);color:var(--red);}
+.fr .anchor{font-size:13px;color:var(--muted);margin-top:10px;}
+.fr button{font:inherit;font-size:13px;padding:6px 12px;border:1px solid var(--line);border-radius:8px;background:var(--bg);cursor:pointer;color:var(--ink);margin-top:12px;}
+.fr button:hover{background:var(--surface);}
+</style>
+<div class="fr">
+  <h3>Tamper-evident flight recorder</h3>
+  <p class="sub">Each record's hash seals the one before it. Edit any field — the chain breaks from there down, and the anchored root stops matching.</p>
+  <div id="chain"></div>
+  <div id="verdict" class="verdict ok"></div>
+  <p class="anchor" id="anchor"></p>
+  <button id="reset">Reset records</button>
+</div>
+<script>
+(function(){
+  var orig=['approach authorized — agent A, token #4471','grasp executed — gripper force 18 N','human entered zone — controller STOP','motion halted — end-effector frozen at 0.44 m','outcome sealed — object not released'];
+  function hash(s){var h=2166136261>>>0;for(var i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619)>>>0;}return('00000000'+h.toString(16)).slice(-8);}
+  function compute(vals){var prev='00000000',hs=[];for(var i=0;i<vals.length;i++){var h=hash(prev+'|'+vals[i]);hs.push(h);prev=h;}return hs;}
+  function mk(tag,cls){var e=document.createElement(tag);if(cls)e.className=cls;return e;}
+  function clear(n){while(n.firstChild)n.removeChild(n.firstChild);}
+  var sealed=compute(orig.slice()),sealedRoot=sealed[sealed.length-1];
+  var wrap=document.getElementById('chain'),blocks=[],inputs=[],hashes=[];
+  orig.forEach(function(v,i){
+    var b=mk('div','blk'),seq=mk('div','seq'),inp=mk('input','val'),h=mk('div','hash');
+    seq.textContent='record '+(i+1);inp.value=v;inp.type='text';
+    b.appendChild(seq);b.appendChild(inp);b.appendChild(h);wrap.appendChild(b);
+    blocks.push(b);inputs.push(inp);hashes.push(h);
+    inp.addEventListener('input',update);
+  });
+  function setHash(node,prev,cur,broken,anchored){
+    clear(node);
+    node.appendChild(document.createTextNode('prev '+prev+' · hash '));
+    var bb=mk('b');bb.textContent=cur;node.appendChild(bb);
+    if(broken){var sp=mk('span','x');sp.textContent=' ≠ anchored '+anchored;node.appendChild(sp);}
+  }
+  function update(){
+    var vals=inputs.map(function(i){return i.value;}),cur=compute(vals),first=-1;
+    for(var i=0;i<cur.length;i++){
+      var broken=cur[i]!==sealed[i];if(broken&&first<0)first=i;
+      blocks[i].classList.toggle('broken',broken);
+      setHash(hashes[i],i===0?'00000000':cur[i-1],cur[i],broken,sealed[i]);
+    }
+    var v=document.getElementById('verdict');
+    if(first<0){v.className='verdict ok';v.textContent='All '+cur.length+' records verify against the anchored root. Nothing has been altered.';}
+    else{v.className='verdict bad';v.textContent='Tampering detected — earliest altered record: '+(first+1)+'. Every record after it is invalidated too.';}
+    var curRoot=cur[cur.length-1],a=document.getElementById('anchor');clear(a);
+    a.appendChild(document.createTextNode('anchored root (held off-device): '));
+    var s1=mk('span','mono'),b1=mk('b');b1.textContent=sealedRoot;s1.appendChild(b1);a.appendChild(s1);
+    a.appendChild(document.createTextNode('   recomputed now: '));
+    var s2=mk('span','mono'+(curRoot!==sealedRoot?' x':'')),b2=mk('b');b2.textContent=curRoot;s2.appendChild(b2);a.appendChild(s2);
+  }
+  document.getElementById('reset').addEventListener('click',function(){inputs.forEach(function(inp,i){inp.value=orig[i];});update();});
+  update();
+})();
+</script>
+</body>
+</html>

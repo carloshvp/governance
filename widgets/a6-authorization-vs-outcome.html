@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Authorization is not outcome</title>
+</head>
+<body>
+<style>
+.avo{--ink:#1f2421;--muted:#6b7280;--line:#e6e6e2;--bg:#fff;--surface:#f7f7f5;--teal:#0f6e56;--tealbg:#e1f5ee;--red:#a32d2d;--redbg:#fcebeb;--amber:#854f0b;--amberbg:#faeeda;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;color:var(--ink);line-height:1.5;max-width:680px;margin:0 auto;padding:8px 0;}
+.avo h3{font-size:16px;font-weight:500;margin:0 0 4px;}
+.avo .sub{color:var(--muted);font-size:13px;margin:0 0 16px;}
+.avo .ctrls{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:14px;}
+.avo button{font:inherit;font-size:13px;padding:6px 12px;border:1px solid var(--line);border-radius:8px;background:var(--bg);cursor:pointer;color:var(--ink);}
+.avo button:hover{background:var(--surface);}
+.avo button.on{border-color:var(--ink);background:var(--ink);color:#fff;}
+.avo .toggle{margin-left:auto;}
+.avo .cols{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.avo .col{border:1px solid var(--line);border-radius:10px;background:var(--surface);padding:12px 14px;}
+.avo .col h4{font-size:13px;font-weight:500;margin:0 0 10px;color:var(--muted);}
+.avo .step{font-size:14px;padding:6px 0;border-bottom:1px dashed var(--line);}
+.avo .step:last-child{border-bottom:0;}
+.avo .step.bold{font-weight:500;}
+.avo .step.muted{color:var(--muted);font-style:italic;}
+.avo .tag{font-size:11px;padding:1px 7px;border-radius:20px;margin-left:6px;background:var(--tealbg);color:var(--teal);}
+.avo .verdict{margin-top:14px;padding:11px 14px;border-radius:10px;font-size:14px;}
+.avo .ok{background:var(--tealbg);color:var(--teal);}
+.avo .bad{background:var(--redbg);color:var(--red);}
+.avo .warn{background:var(--amberbg);color:var(--amber);}
+</style>
+<div class="avo">
+  <h3>The same authorization log certifies every outcome</h3>
+  <p class="sub">Pick a physical scenario, then toggle whether the robot's outcome evidence is being recorded.</p>
+  <div class="ctrls">
+    <button data-s="nominal" class="on">Nominal run</button>
+    <button data-s="slip">Gripper slip</button>
+    <button data-s="human">Human entered zone</button>
+    <button class="toggle" id="att">Outcome attestation: on</button>
+  </div>
+  <div class="cols">
+    <div class="col">
+      <h4>Authorization log (cMCP)</h4>
+      <div class="step">approach <span class="tag">allow</span></div>
+      <div class="step">grasp <span class="tag">allow</span></div>
+      <div class="step">place <span class="tag">allow</span></div>
+      <div class="step bold">result: task complete</div>
+    </div>
+    <div class="col">
+      <h4>Physical outcome (sensors)</h4>
+      <div id="out"></div>
+    </div>
+  </div>
+  <div id="verdict" class="verdict ok"></div>
+</div>
+<script>
+(function(){
+  var S={
+    nominal:{steps:['reached target','grasped — 18 N grip','placed — object released'],fault:null,warn:null},
+    slip:{steps:['reached target','grasped — 6 N under-grip','place attempted — object dropped'],fault:'object dropped during place',warn:null},
+    human:{steps:['reached target','human entered — controller STOP','motion halted — object held safe'],fault:null,warn:'task not completed — protective stop'}
+  };
+  var cur='nominal',att=true;
+  var out=document.getElementById('out'),verdict=document.getElementById('verdict');
+  function clear(n){while(n.firstChild)n.removeChild(n.firstChild);}
+  function step(text,extra){var d=document.createElement('div');d.className='step'+(extra?(' '+extra):'');d.textContent=text;return d;}
+  function render(){
+    var s=S[cur];clear(out);
+    if(!att){
+      ['— not recorded —','— not recorded —','— not recorded —'].forEach(function(t){out.appendChild(step(t,'muted'));});
+      out.appendChild(step('trusting the log','muted'));
+      verdict.className='verdict ok';
+      verdict.textContent='Reported: task complete. With only the authorization log, the failure (if any) is invisible — the audit cannot see it.';
+      return;
+    }
+    s.steps.forEach(function(t){out.appendChild(step(t));});
+    out.appendChild(step('outcome sealed + signed','bold'));
+    if(s.fault){verdict.className='verdict bad';verdict.textContent='AUTHORIZED ≠ HAPPENED — '+s.fault+'. The log said allow; the sensors say otherwise.';}
+    else if(s.warn){verdict.className='verdict warn';verdict.textContent='Authorized, and the outcome is confirmed: '+s.warn+'. The audit shows a safe stop, not a silent success.';}
+    else{verdict.className='verdict ok';verdict.textContent='Authorized and confirmed by sensor evidence — a clean run you can actually prove.';}
+  }
+  document.querySelectorAll('button[data-s]').forEach(function(b){b.addEventListener('click',function(){cur=this.dataset.s;document.querySelectorAll('button[data-s]').forEach(function(x){x.classList.remove('on');});this.classList.add('on');render();});});
+  document.getElementById('att').addEventListener('click',function(){att=!att;this.textContent='Outcome attestation: '+(att?'on':'off');this.classList.toggle('on',!att);render();});
+  render();
+})();
+</script>
+</body>
+</html>

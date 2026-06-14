@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Fleet revocation</title>
+</head>
+<body>
+<style>
+.fl{--ink:#1f2421;--muted:#6b7280;--line:#e6e6e2;--bg:#fff;--surface:#f7f7f5;--teal:#0f6e56;--tealbg:#e1f5ee;--red:#a32d2d;--redbg:#fcebeb;--gray:#888780;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;color:var(--ink);line-height:1.5;max-width:680px;margin:0 auto;padding:8px 0;}
+.fl h3{font-size:16px;font-weight:500;margin:0 0 4px;}
+.fl .sub{color:var(--muted);font-size:13px;margin:0 0 14px;}
+.fl .cards{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px;}
+.fl .card{background:var(--surface);border-radius:8px;padding:10px 12px;}
+.fl .card .k{font-size:12px;color:var(--muted);}
+.fl .card .v{font-size:22px;font-weight:500;margin-top:2px;}
+.fl .grid{display:grid;grid-template-columns:repeat(12,1fr);gap:5px;margin-bottom:14px;}
+.fl .cell{aspect-ratio:1;border-radius:5px;background:var(--tealbg);border:1px solid #cdeadd;cursor:pointer;}
+.fl .cell.bad{background:var(--redbg);border-color:#f0b6b6;}
+.fl .cell.rev{background:#ece9e3;border-color:#ddd9cf;cursor:default;}
+.fl .ctrls{display:flex;gap:8px;align-items:center;margin-bottom:12px;}
+.fl button{font:inherit;font-size:13px;padding:7px 14px;border:1px solid var(--line);border-radius:8px;background:var(--bg);cursor:pointer;color:var(--ink);}
+.fl button:hover{background:var(--surface);}
+.fl .legend{font-size:12px;color:var(--muted);margin-left:auto;}
+.fl .log{font-size:12px;font-family:ui-monospace,Menlo,monospace;color:var(--muted);background:var(--surface);border-radius:8px;padding:10px 12px;max-height:120px;overflow:auto;}
+.fl .log div{padding:1px 0;}
+</style>
+<div class="fl">
+  <h3>Revocation is a latency number, not a hope</h3>
+  <p class="sub">Click robots to mark them compromised, then revoke. Watch how fast it propagates fleet-wide — and that it leaves a proof.</p>
+  <div class="cards">
+    <div class="card"><div class="k">fleet healthy</div><div class="v"><span id="pct">100</span>%</div></div>
+    <div class="card"><div class="k">compromised</div><div class="v" id="bad">0</div></div>
+    <div class="card"><div class="k">last revocation</div><div class="v" id="lat">—</div></div>
+  </div>
+  <div class="ctrls">
+    <button id="revoke">Revoke compromised units</button>
+    <button id="reset">Reset fleet</button>
+    <span class="legend">teal trusted · red compromised · grey revoked</span>
+  </div>
+  <div class="grid" id="grid"></div>
+  <div class="log" id="log"><div>fleet transparency log</div></div>
+</div>
+<script>
+(function(){
+  var N=48,state=[],cells=[];
+  var grid=document.getElementById('grid'),log=document.getElementById('log');
+  for(var i=0;i<N;i++){
+    state.push('ok');
+    var c=document.createElement('div');c.className='cell';c.dataset.i=i;
+    c.addEventListener('click',function(){
+      var k=+this.dataset.i;if(state[k]==='rev')return;
+      state[k]=state[k]==='ok'?'bad':'ok';paint();
+    });
+    grid.appendChild(c);cells.push(c);
+  }
+  function paint(){
+    var bad=0,rev=0;
+    for(var i=0;i<N;i++){
+      cells[i].className='cell'+(state[i]==='bad'?' bad':state[i]==='rev'?' rev':'');
+      if(state[i]==='bad')bad++;if(state[i]==='rev')rev++;
+    }
+    var healthy=N-bad-rev;
+    document.getElementById('pct').textContent=Math.round(healthy/N*100);
+    document.getElementById('bad').textContent=bad;
+  }
+  function stamp(){var d=new Date();return d.toTimeString().slice(0,8);}
+  document.getElementById('revoke').addEventListener('click',function(){
+    var ids=[];for(var i=0;i<N;i++)if(state[i]==='bad')ids.push(i);
+    if(ids.length===0)return;
+    var latency=60+ids.length*38;
+    ids.forEach(function(i){state[i]='rev';});
+    paint();
+    document.getElementById('lat').textContent=latency+' ms';
+    var line=document.createElement('div');
+    line.textContent=stamp()+'  REVOKE  '+ids.length+' unit(s) — credentials invalidated fleet-wide in '+latency+' ms';
+    log.appendChild(line);log.scrollTop=log.scrollHeight;
+  });
+  document.getElementById('reset').addEventListener('click',function(){
+    for(var i=0;i<N;i++)state[i]='ok';paint();
+    document.getElementById('lat').textContent='—';
+    while(log.children.length>1)log.removeChild(log.lastChild);
+  });
+  paint();
+})();
+</script>
+</body>
+</html>

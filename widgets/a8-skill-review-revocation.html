@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Skill review and the kill switch</title>
+</head>
+<body>
+<style>
+.rv{--ink:#1f2421;--muted:#6b7280;--line:#e6e6e2;--bg:#fff;--surface:#f7f7f5;--teal:#0f6e56;--tealbg:#e1f5ee;--red:#a32d2d;--redbg:#fcebeb;--amber:#854f0b;--amberbg:#faeeda;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;color:var(--ink);line-height:1.5;max-width:680px;margin:0 auto;padding:8px 0;}
+.rv h3{font-size:16px;font-weight:500;margin:0 0 4px;}
+.rv .sub{color:var(--muted);font-size:13px;margin:0 0 14px;}
+.rv .card{border:1px solid var(--line);border-radius:12px;background:var(--surface);padding:14px 16px;margin-bottom:14px;}
+.rv .top{display:flex;justify-content:space-between;align-items:flex-start;}
+.rv .nm{font-size:16px;font-weight:500;}
+.rv .pub{font-size:12px;color:var(--muted);}
+.rv .badge{font-size:12px;padding:3px 10px;border-radius:20px;background:#ece9e3;color:#5f5e5a;}
+.rv .badge.published{background:var(--tealbg);color:var(--teal);}
+.rv .badge.revoked{background:var(--redbg);color:var(--red);}
+.rv .badge.review{background:var(--amberbg);color:var(--amber);}
+.rv .caps{margin:8px 0 0;font-size:12px;}
+.rv .mtag{display:inline-block;background:#fff;border:1px solid var(--line);border-radius:20px;padding:1px 9px;margin:3px 4px 0 0;font-size:12px;}
+.rv .checks{list-style:none;padding:0;margin:0 0 14px;}
+.rv .checks li{display:flex;align-items:center;gap:9px;font-size:13px;padding:5px 0;color:var(--muted);}
+.rv .checks li.done{color:var(--ink);}
+.rv .mark{width:18px;height:18px;border-radius:50%;border:1px solid var(--line);display:inline-flex;align-items:center;justify-content:center;font-size:12px;color:#fff;}
+.rv .checks li.done .mark{background:var(--teal);border-color:var(--teal);}
+.rv .ctrls{display:flex;gap:8px;flex-wrap:wrap;}
+.rv button{font:inherit;font-size:13px;padding:8px 14px;border:1px solid var(--line);border-radius:8px;background:var(--bg);cursor:pointer;color:var(--ink);}
+.rv button:hover:not(:disabled){background:var(--surface);}
+.rv button:disabled{opacity:.4;cursor:default;}
+.rv button.danger{border-color:#eaa;color:var(--red);}
+.rv .log{font-size:12px;font-family:ui-monospace,Menlo,monospace;color:var(--muted);background:var(--surface);border-radius:8px;padding:10px 12px;margin-top:14px;}
+.rv .log div{padding:1px 0;}
+</style>
+<div class="rv">
+  <h3>Reviewed, signed, shipped — and revocable in one motion</h3>
+  <p class="sub">Run the marketplace review, publish to the fleet, then report misbehaviour and watch the skill get pulled everywhere.</p>
+  <div class="card">
+    <div class="top">
+      <div><div class="nm">barista-latte</div><div class="pub">publisher: ThirdPartyCo · signed manifest · v1.2</div></div>
+      <span class="badge" id="badge">unreviewed</span>
+    </div>
+    <div class="caps"><span class="mtag">move arm</span><span class="mtag">actuate gripper</span><span class="mtag">read camera</span><span class="mtag">counter zone only</span></div>
+  </div>
+  <ul class="checks" id="checks"></ul>
+  <div class="ctrls">
+    <button id="review">Run marketplace review</button>
+    <button id="publish" disabled>Publish to fleet</button>
+    <button id="revoke" class="danger" disabled>Report misbehaviour → revoke</button>
+    <button id="reset">Reset</button>
+  </div>
+  <div class="log" id="log"><div>marketplace event log</div></div>
+</div>
+<script>
+(function(){
+  var items=['signature valid','provenance present (SLSA L1)','declared capabilities within policy','sandbox manifest attached','static scan clean','attestation record issued'];
+  var checksEl=document.getElementById('checks'),lis=[];
+  items.forEach(function(t){
+    var li=document.createElement('li');var m=document.createElement('span');m.className='mark';var tx=document.createElement('span');tx.textContent=t;
+    li.appendChild(m);li.appendChild(tx);checksEl.appendChild(li);lis.push({li:li,mark:m});
+  });
+  var badge=document.getElementById('badge'),log=document.getElementById('log');
+  var bReview=document.getElementById('review'),bPub=document.getElementById('publish'),bRev=document.getElementById('revoke');
+  var busy=false;
+  function setBadge(text,cls){badge.textContent=text;badge.className='badge'+(cls?' '+cls:'');}
+  function stamp(){return new Date().toTimeString().slice(0,8);}
+  function logLine(t){var d=document.createElement('div');d.textContent=stamp()+'  '+t;log.appendChild(d);log.scrollTop=log.scrollHeight;}
+  function clearChecks(){lis.forEach(function(o){o.li.classList.remove('done');o.mark.textContent='';});}
+  bReview.addEventListener('click',function(){
+    if(busy)return;busy=true;clearChecks();setBadge('in review','review');bReview.disabled=true;
+    var i=0;
+    (function next(){
+      if(i>=lis.length){busy=false;setBadge('approved','review');bPub.disabled=false;logLine('REVIEW   approved — attestation record signed and issued');return;}
+      lis[i].li.classList.add('done');lis[i].mark.textContent='✓';i++;setTimeout(next,360);
+    })();
+  });
+  bPub.addEventListener('click',function(){
+    setBadge('published','published');bPub.disabled=true;bRev.disabled=false;
+    logLine('PUBLISH  barista-latte v1.2 rolled out to fleet (staged) — 48 units');
+  });
+  bRev.addEventListener('click',function(){
+    setBadge('revoked','revoked');bRev.disabled=true;
+    logLine('REVOKE   misbehaviour reported — skill pulled fleet-wide, attestation invalidated in 84 ms');
+  });
+  document.getElementById('reset').addEventListener('click',function(){
+    busy=false;clearChecks();setBadge('unreviewed','');bReview.disabled=false;bPub.disabled=true;bRev.disabled=true;
+    while(log.children.length>1)log.removeChild(log.lastChild);
+  });
+})();
+</script>
+</body>
+</html>

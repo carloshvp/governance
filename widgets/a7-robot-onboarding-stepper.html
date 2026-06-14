@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>From silicon to fleet identity</title>
+</head>
+<body>
+<style>
+.ob{--ink:#1f2421;--muted:#6b7280;--line:#e6e6e2;--bg:#fff;--surface:#f7f7f5;--teal:#0f6e56;--tealbg:#e1f5ee;--blue:#185fa5;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;color:var(--ink);line-height:1.5;max-width:680px;margin:0 auto;padding:8px 0;}
+.ob h3{font-size:16px;font-weight:500;margin:0 0 4px;}
+.ob .sub{color:var(--muted);font-size:13px;margin:0 0 16px;}
+.ob .dots{display:flex;gap:6px;margin-bottom:14px;}
+.ob .dot{flex:1;height:5px;border-radius:3px;background:var(--line);}
+.ob .dot.on{background:var(--teal);}
+.ob .stage{border:1px solid var(--line);border-radius:12px;background:var(--surface);padding:16px;min-height:150px;}
+.ob .num{font-size:12px;color:var(--muted);}
+.ob .ttl{font-size:17px;font-weight:500;margin:2px 0 8px;}
+.ob .desc{font-size:14px;margin-bottom:12px;}
+.ob .signed{font-size:13px;background:var(--tealbg);color:var(--teal);border-radius:8px;padding:8px 11px;}
+.ob .signed .lab{font-size:11px;text-transform:uppercase;letter-spacing:.04em;opacity:.8;}
+.ob .nav{display:flex;gap:8px;margin-top:14px;align-items:center;}
+.ob button{font:inherit;font-size:13px;padding:7px 14px;border:1px solid var(--line);border-radius:8px;background:var(--bg);cursor:pointer;color:var(--ink);}
+.ob button:hover:not(:disabled){background:var(--surface);}
+.ob button:disabled{opacity:.4;cursor:default;}
+.ob .count{margin-left:auto;font-size:13px;color:var(--muted);}
+</style>
+<div class="ob">
+  <h3>A robot's identity is born on the line, not assigned by a server</h3>
+  <p class="sub">Each stage hands the next a signed artifact. The fleet identity at the end is the tail of a chain that starts in silicon.</p>
+  <div class="dots" id="dots"></div>
+  <div class="stage">
+    <div class="num" id="num"></div>
+    <div class="ttl" id="ttl"></div>
+    <div class="desc" id="desc"></div>
+    <div class="signed"><div class="lab">artifact signed at this stage</div><div id="art"></div></div>
+  </div>
+  <div class="nav">
+    <button id="back">Back</button>
+    <button id="next">Next</button>
+    <span class="count" id="count"></span>
+  </div>
+</div>
+<script>
+(function(){
+  var steps=[
+    {t:'Factory root of trust',d:'On the manufacturing line, a unique key pair is provisioned into the secure element and one-time fuses are burned. The private key never leaves the hardware.',a:'device key pair — bound to this physical unit'},
+    {t:'Secure boot, measured',d:'On power-up the on-die BootROM authenticates each boot stage and records measurements, so the running software state is provable later.',a:'boot measurement — a fingerprint of exactly what booted'},
+    {t:'Device attestation (onboarding)',d:'Before it may join, the unit proves what it is to the onboarding service (FDO / BRSKI-style) — genuine hardware in an expected state, not a claim on a form.',a:'attestation report — genuine hardware, expected boot state'},
+    {t:'Fleet enrolment',d:'Only now is a workload identity issued and bound to the device key, so every later action and evidence record traces back to this specific robot.',a:'fleet identity (SPIFFE ID) — bound to the device key'},
+    {t:'First signed release',d:'The approved skill bundle is delivered and verified against its signed manifest. The robot is ready to operate — and accountable from its first motion.',a:'signed release manifest — ready to operate'}
+  ];
+  var i=0;
+  var dots=document.getElementById('dots');
+  steps.forEach(function(){var d=document.createElement('div');d.className='dot';dots.appendChild(d);});
+  var dotEls=dots.querySelectorAll('.dot');
+  function render(){
+    var s=steps[i];
+    document.getElementById('num').textContent='stage '+(i+1)+' of '+steps.length;
+    document.getElementById('ttl').textContent=s.t;
+    document.getElementById('desc').textContent=s.d;
+    document.getElementById('art').textContent=s.a;
+    document.getElementById('count').textContent=(i+1)+' / '+steps.length;
+    document.getElementById('back').disabled=(i===0);
+    document.getElementById('next').disabled=(i===steps.length-1);
+    dotEls.forEach(function(d,k){d.classList.toggle('on',k<=i);});
+  }
+  document.getElementById('next').addEventListener('click',function(){if(i<steps.length-1){i++;render();}});
+  document.getElementById('back').addEventListener('click',function(){if(i>0){i--;render();}});
+  render();
+})();
+</script>
+</body>
+</html>

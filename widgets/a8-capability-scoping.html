@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Default-deny at the skill boundary</title>
+</head>
+<body>
+<style>
+.cs{--ink:#1f2421;--muted:#6b7280;--line:#e6e6e2;--bg:#fff;--surface:#f7f7f5;--teal:#0f6e56;--tealbg:#e1f5ee;--red:#a32d2d;--redbg:#fcebeb;--amber:#854f0b;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;color:var(--ink);line-height:1.5;max-width:680px;margin:0 auto;padding:8px 0;}
+.cs h3{font-size:16px;font-weight:500;margin:0 0 4px;}
+.cs .sub{color:var(--muted);font-size:13px;margin:0 0 14px;}
+.cs .skills{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;}
+.cs button.sk{font:inherit;font-size:13px;padding:7px 13px;border:1px solid var(--line);border-radius:8px;background:var(--bg);cursor:pointer;color:var(--ink);}
+.cs button.sk.on{border-color:var(--ink);background:var(--ink);color:#fff;}
+.cs .manifest{background:var(--surface);border-radius:10px;padding:11px 13px;margin-bottom:14px;font-size:13px;}
+.cs .manifest .lab{font-size:11px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);margin-bottom:6px;}
+.cs .mtag{display:inline-block;background:var(--tealbg);color:var(--teal);border-radius:20px;padding:2px 10px;margin:3px 4px 0 0;font-size:12px;}
+.cs .caps{display:grid;gap:7px;margin-bottom:14px;}
+.cs .cap{display:flex;align-items:center;gap:10px;border:1px solid var(--line);border-radius:9px;padding:8px 11px;}
+.cs .cap .nm{font-size:14px;}
+.cs .cap .safety{font-size:11px;color:var(--amber);border:1px solid #e7c98a;border-radius:20px;padding:0 8px;}
+.cs .cap button{margin-left:auto;font:inherit;font-size:12px;padding:5px 11px;border:1px solid var(--line);border-radius:7px;background:var(--bg);cursor:pointer;color:var(--ink);}
+.cs .cap button:hover{background:var(--surface);}
+.cs .log{font-size:13px;background:var(--surface);border-radius:10px;padding:10px 12px;max-height:150px;overflow:auto;}
+.cs .log .l{padding:3px 0;border-bottom:1px dashed var(--line);}
+.cs .log .l:last-child{border-bottom:0;}
+.cs .l.allow{color:var(--teal);}
+.cs .l.deny{color:var(--red);}
+.cs .log .empty{color:var(--muted);}
+</style>
+<div class="cs">
+  <h3>A skill gets exactly what its manifest declares — nothing more</h3>
+  <p class="sub">Pick a skill, then attempt any capability. Undeclared calls fail structurally, not by a rule someone remembered to add.</p>
+  <div class="skills" id="skills"></div>
+  <div class="manifest"><div class="lab">signed manifest — declared capabilities</div><div id="declared"></div></div>
+  <div class="caps" id="caps"></div>
+  <div class="log" id="log"><div class="empty">no calls attempted yet</div></div>
+</div>
+<script>
+(function(){
+  var caps=[
+    {id:'read_clock',label:'read clock',safety:false},
+    {id:'read_camera',label:'read camera',safety:false},
+    {id:'read_inventory_db',label:'read inventory DB',safety:false},
+    {id:'network_fetch',label:'fetch over network',safety:false},
+    {id:'move_arm',label:'move arm',safety:true},
+    {id:'actuate_gripper',label:'actuate gripper',safety:true}
+  ];
+  var skills={
+    'weather-display':['read_clock','network_fetch'],
+    'inventory-scan':['read_camera','read_inventory_db','network_fetch'],
+    'arm-handoff':['read_camera','move_arm','actuate_gripper']
+  };
+  var order=['weather-display','inventory-scan','arm-handoff'];
+  var sel='weather-display',logged=false;
+  var skillsEl=document.getElementById('skills'),declared=document.getElementById('declared'),capsEl=document.getElementById('caps'),log=document.getElementById('log');
+  function mk(t,c){var e=document.createElement(t);if(c)e.className=c;return e;}
+  function label(id){for(var i=0;i<caps.length;i++)if(caps[i].id===id)return caps[i].label;return id;}
+  order.forEach(function(s){
+    var b=mk('button','sk'+(s===sel?' on':''));b.textContent=s;b.dataset.s=s;
+    b.addEventListener('click',function(){sel=this.dataset.s;document.querySelectorAll('.sk').forEach(function(x){x.classList.toggle('on',x.dataset.s===sel);});renderManifest();});
+    skillsEl.appendChild(b);
+  });
+  function renderManifest(){
+    while(declared.firstChild)declared.removeChild(declared.firstChild);
+    skills[sel].forEach(function(id){var t=mk('span','mtag');t.textContent=label(id);declared.appendChild(t);});
+  }
+  caps.forEach(function(c){
+    var row=mk('div','cap'),nm=mk('span','nm');nm.textContent=c.label;row.appendChild(nm);
+    if(c.safety){var s=mk('span','safety');s.textContent='safety-critical';row.appendChild(s);}
+    var btn=mk('button');btn.textContent='attempt call';
+    btn.addEventListener('click',function(){attempt(c);});
+    row.appendChild(btn);capsEl.appendChild(row);
+  });
+  function attempt(c){
+    if(!logged){while(log.firstChild)log.removeChild(log.firstChild);logged=true;}
+    var allowed=skills[sel].indexOf(c.id)>=0;
+    var l=mk('div','l '+(allowed?'allow':'deny'));
+    l.textContent=(allowed?'ALLOW  ':'DENY   ')+sel+' → '+c.label+(allowed?'  (declared in manifest)':'  (default-deny: not in signed manifest)');
+    log.appendChild(l);log.scrollTop=log.scrollHeight;
+  }
+  renderManifest();
+})();
+</script>
+</body>
+</html>

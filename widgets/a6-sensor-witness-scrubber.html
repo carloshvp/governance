@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sensors as witnesses</title>
+</head>
+<body>
+<style>
+.sw{--ink:#1f2421;--muted:#6b7280;--line:#e6e6e2;--bg:#fff;--surface:#f7f7f5;--teal:#0f6e56;--blue:#185fa5;--red:#a32d2d;--redbg:#fcebeb;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;color:var(--ink);line-height:1.5;max-width:680px;margin:0 auto;padding:8px 0;}
+.sw h3{font-size:16px;font-weight:500;margin:0 0 4px;}
+.sw .sub{color:var(--muted);font-size:13px;margin:0 0 16px;}
+.sw .scrub{width:100%;}
+.sw .timelbl{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin:2px 0 14px;}
+.sw .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:14px;}
+.sw .card{background:var(--surface);border-radius:8px;padding:10px 12px;}
+.sw .card .k{font-size:12px;color:var(--muted);}
+.sw .card .v{font-size:22px;font-weight:500;margin-top:2px;}
+.sw .card .v small{font-size:13px;color:var(--muted);font-weight:400;}
+.sw .banner{padding:9px 12px;border-radius:8px;font-size:13px;margin-bottom:12px;background:var(--surface);color:var(--muted);}
+.sw .banner.stop{background:var(--redbg);color:var(--red);}
+.sw svg{display:block;width:100%;height:120px;}
+.sw .sig{font-size:12px;color:var(--teal);}
+</style>
+<div class="sw">
+  <h3>One motion, many witnesses, one timeline</h3>
+  <p class="sub">Drag to scrub a 5-second pick. Every reading is signed and bound to the controller's single-use state token.</p>
+  <input type="range" min="0" max="100" value="20" step="1" id="scrub" class="scrub">
+  <div class="timelbl"><span>0.0 s</span><span id="now">1.0 s</span><span>5.0 s</span></div>
+  <div id="banner" class="banner">approach phase — moving toward target</div>
+  <div class="grid">
+    <div class="card"><div class="k">end-effector height</div><div class="v"><span id="pos">0.19</span> <small>m</small></div></div>
+    <div class="card"><div class="k">drive torque</div><div class="v"><span id="trq">9</span> <small>N·m</small></div></div>
+    <div class="card"><div class="k">controller state token</div><div class="v" style="font-size:16px" id="tok">#4471 · MOVE</div></div>
+  </div>
+  <svg viewBox="0 0 660 120" preserveAspectRatio="none" role="img" aria-label="Drive torque over time, collapsing to zero at the protective stop">
+    <line x1="0" y1="100" x2="660" y2="100" stroke="#e6e6e2"/>
+    <polyline id="spark" fill="none" stroke="#185fa5" stroke-width="2"/>
+    <line id="evt" x1="304" y1="6" x2="304" y2="100" stroke="#a32d2d" stroke-width="1.5" stroke-dasharray="4 4"/>
+    <circle id="dot" cx="0" cy="100" r="4" fill="#185fa5"/>
+  </svg>
+  <p class="sig" id="sig">frame signed ✓ &nbsp; · &nbsp; bound to token #4471</p>
+</div>
+<script>
+(function(){
+  var EVT=46;
+  function torque(p){return p<EVT?Math.max(0,Math.round(6+8*Math.sin(Math.PI*p/EVT))):0;}
+  function height(p){var pp=Math.min(p,EVT);return (0.10+0.45*(pp/60));}
+  var pts=[];for(var p=0;p<=100;p++){var x=p/100*660;var y=100-torque(p)/16*94;pts.push(x.toFixed(1)+','+y.toFixed(1));}
+  document.getElementById('spark').setAttribute('points',pts.join(' '));
+  var sc=document.getElementById('scrub');
+  function upd(){
+    var p=+sc.value,t=(p/100*5);
+    document.getElementById('now').textContent=t.toFixed(1)+' s';
+    document.getElementById('pos').textContent=height(p).toFixed(2);
+    document.getElementById('trq').textContent=torque(p);
+    var stopped=p>=EVT;
+    document.getElementById('tok').textContent='#4471 · '+(stopped?'STOP':'MOVE');
+    var b=document.getElementById('banner');
+    if(stopped){b.className='banner stop';b.textContent='human entered safeguarded zone at 2.3 s — controller forced a protective stop';}
+    else{b.className='banner';b.textContent=p<30?'approach phase — moving toward target':'grasp + transport — object held under load';}
+    var x=p/100*660,y=100-torque(p)/16*94;
+    var dot=document.getElementById('dot');dot.setAttribute('cx',x.toFixed(1));dot.setAttribute('cy',y.toFixed(1));
+    document.getElementById('sig').textContent='frame signed ✓   ·   bound to token #4471 ('+(stopped?'STOP':'MOVE')+')';
+  }
+  sc.addEventListener('input',upd);upd();
+})();
+</script>
+</body>
+</html>

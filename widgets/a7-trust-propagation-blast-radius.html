@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Trust propagation and blast radius</title>
+</head>
+<body>
+<style>
+.bp{--ink:#1f2421;--muted:#6b7280;--line:#e6e6e2;--bg:#fff;--surface:#f7f7f5;--teal:#0f6e56;--tealbg:#e1f5ee;--red:#a32d2d;--redbg:#fcebeb;--amber:#854f0b;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;color:var(--ink);line-height:1.5;max-width:680px;margin:0 auto;padding:8px 0;}
+.bp h3{font-size:16px;font-weight:500;margin:0 0 4px;}
+.bp .sub{color:var(--muted);font-size:13px;margin:0 0 14px;}
+.bp .ctrls{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:12px;}
+.bp button{font:inherit;font-size:13px;padding:7px 14px;border:1px solid var(--line);border-radius:8px;background:var(--bg);cursor:pointer;color:var(--ink);}
+.bp button:hover{background:var(--surface);}
+.bp .switch{display:flex;align-items:center;gap:8px;margin-left:auto;font-size:13px;}
+.bp .toggle{width:44px;height:24px;border-radius:20px;background:#ddd9cf;border:none;position:relative;cursor:pointer;padding:0;}
+.bp .toggle.on{background:var(--teal);}
+.bp .knob{position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;background:#fff;transition:left .15s;}
+.bp .toggle.on .knob{left:23px;}
+.bp .cards{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:12px;}
+.bp .card{background:var(--surface);border-radius:8px;padding:9px 12px;}
+.bp .card .k{font-size:12px;color:var(--muted);}
+.bp .card .v{font-size:21px;font-weight:500;margin-top:2px;}
+.bp .grid{display:grid;grid-template-columns:repeat(8,1fr);gap:5px;margin-bottom:12px;}
+.bp .cell{aspect-ratio:1;border-radius:5px;background:var(--tealbg);border:1px solid #cdeadd;}
+.bp .cell.inf{background:var(--redbg);border-color:#eaa;}
+.bp .cell.pz{background:#f0997b;border-color:#d85a30;}
+.bp .bar{height:7px;border-radius:4px;background:var(--line);overflow:hidden;margin-bottom:6px;}
+.bp .bar span{display:block;height:100%;background:var(--red);width:0;}
+.bp .status{font-size:13px;color:var(--muted);}
+.bp .status.done{color:var(--ink);}
+</style>
+<div class="bp">
+  <h3>Networked learning is a propagation channel — for good skills and bad</h3>
+  <p class="sub">A poisoned skill enters at one robot. With containment off it floods the fleet; with containment on, a signed staging bound holds it.</p>
+  <div class="cards">
+    <div class="card"><div class="k">robots reached</div><div class="v"><span id="n">1</span> / 64</div></div>
+    <div class="card"><div class="k">fleet affected</div><div class="v"><span id="pct">2</span>%</div></div>
+    <div class="card"><div class="k">propagation ticks</div><div class="v" id="ticks">0</div></div>
+  </div>
+  <div class="bar"><span id="barf"></span></div>
+  <div class="ctrls">
+    <button id="play">Play</button>
+    <button id="step">Step</button>
+    <button id="reset">Reset</button>
+    <div class="switch">containment
+      <button class="toggle" id="tg" aria-label="toggle containment"><span class="knob"></span></button>
+    </div>
+  </div>
+  <div class="grid" id="grid"></div>
+  <div class="status" id="status">spreading from patient zero — press play</div>
+</div>
+<script>
+(function(){
+  var N=8,PZ={r:3,c:3},cells=[],infected={},ticks=0,contain=false,timer=null;
+  var grid=document.getElementById('grid');
+  for(var r=0;r<N;r++)for(var c=0;c<N;c++){var d=document.createElement('div');d.className='cell';grid.appendChild(d);cells.push(d);}
+  function idx(r,c){return r*N+c;}
+  function inG(r,c){return r>=0&&r<N&&c>=0&&c<N;}
+  function cohort(r,c){return Math.max(Math.abs(r-PZ.r),Math.abs(c-PZ.c))<=1;}
+  function reset(){infected={};infected[idx(PZ.r,PZ.c)]=true;ticks=0;stop();render(false);}
+  function step(){
+    var add=[];
+    for(var r=0;r<N;r++)for(var c=0;c<N;c++){
+      if(!infected[idx(r,c)])continue;
+      [[r-1,c],[r+1,c],[r,c-1],[r,c+1]].forEach(function(nb){
+        var nr=nb[0],nc=nb[1];if(!inG(nr,nc)||infected[idx(nr,nc)])return;
+        if(contain&&!cohort(nr,nc))return;
+        add.push(idx(nr,nc));
+      });
+    }
+    if(!add.length)return false;
+    add.forEach(function(i){infected[i]=true;});ticks++;return true;
+  }
+  function count(){var n=0;for(var k in infected)if(infected[k])n++;return n;}
+  function render(done){
+    for(var r=0;r<N;r++)for(var c=0;c<N;c++){
+      var i=idx(r,c),cl='cell';
+      if(r===PZ.r&&c===PZ.c)cl+=' pz';else if(infected[i])cl+=' inf';
+      cells[i].className=cl;
+    }
+    var n=count(),pct=Math.round(n/64*100);
+    document.getElementById('n').textContent=n;
+    document.getElementById('pct').textContent=pct;
+    document.getElementById('ticks').textContent=ticks;
+    document.getElementById('barf').style.width=pct+'%';
+    var s=document.getElementById('status');
+    if(done){s.className='status done';s.textContent=contain?('contained — '+n+' of 64 reached, propagation halted at the staging bound'):('uncontained — '+n+' of 64 robots running the poisoned skill');}
+    else{s.className='status';s.textContent=contain?'containment on — bounded to a signed staging cohort':'containment off — every neighbour auto-accepts the shared skill';}
+  }
+  function stop(){if(timer){clearInterval(timer);timer=null;}document.getElementById('play').textContent='Play';}
+  function play(){
+    if(timer){stop();return;}
+    document.getElementById('play').textContent='Pause';
+    timer=setInterval(function(){var ch=step();render(!ch);if(!ch)stop();},430);
+  }
+  document.getElementById('play').addEventListener('click',play);
+  document.getElementById('step').addEventListener('click',function(){var ch=step();render(!ch);});
+  document.getElementById('reset').addEventListener('click',reset);
+  document.getElementById('tg').addEventListener('click',function(){contain=!contain;this.classList.toggle('on',contain);reset();});
+  reset();
+})();
+</script>
+</body>
+</html>

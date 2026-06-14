@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The supply chain of a robot's mind</title>
+</head>
+<body>
+<style>
+.sc{--ink:#1f2421;--muted:#6b7280;--line:#e6e6e2;--bg:#fff;--surface:#f7f7f5;--teal:#0f6e56;--tealbg:#e1f5ee;--red:#a32d2d;--redbg:#fcebeb;--amber:#854f0b;--amberbg:#faeeda;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;color:var(--ink);line-height:1.5;max-width:680px;margin:0 auto;padding:8px 0;}
+.sc h3{font-size:16px;font-weight:500;margin:0 0 4px;}
+.sc .sub{color:var(--muted);font-size:13px;margin:0 0 14px;}
+.sc .chips{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:6px;}
+.sc .arrow{color:var(--muted);font-size:14px;}
+.sc .chip{display:flex;align-items:center;gap:7px;border:1px solid var(--line);border-radius:9px;background:var(--surface);padding:7px 11px;cursor:pointer;font-size:13px;color:var(--ink);}
+.sc .chip.sel{border-color:var(--ink);}
+.sc .chip.blocked{background:var(--redbg);border-color:#eaa;}
+.sc .chip.risk{background:var(--amberbg);border-color:#e7c98a;}
+.sc .dot{width:9px;height:9px;border-radius:50%;background:var(--teal);}
+.sc .dot.red{background:var(--red);}
+.sc .dot.amber{background:var(--amber);}
+.sc .toggle{display:flex;align-items:center;gap:8px;font-size:13px;margin:12px 0 14px;}
+.sc .tg{width:44px;height:24px;border-radius:20px;background:var(--teal);border:none;position:relative;cursor:pointer;padding:0;}
+.sc .tg.off{background:#ddd9cf;}
+.sc .knob{position:absolute;top:3px;left:23px;width:18px;height:18px;border-radius:50%;background:#fff;transition:left .15s;}
+.sc .tg.off .knob{left:3px;}
+.sc .detail{border:1px solid var(--line);border-radius:12px;background:var(--surface);padding:14px 16px;}
+.sc .detail .name{font-size:16px;font-weight:500;margin-bottom:8px;}
+.sc .row{display:flex;justify-content:space-between;font-size:13px;padding:4px 0;border-bottom:1px dashed var(--line);}
+.sc .row:last-of-type{border-bottom:0;}
+.sc .row .k{color:var(--muted);}
+.sc .verdict{margin-top:10px;font-size:13px;padding:8px 11px;border-radius:8px;}
+.sc .ok{background:var(--tealbg);color:var(--teal);}
+.sc .bad{background:var(--redbg);color:var(--red);}
+.sc .warn{background:var(--amberbg);color:var(--amber);}
+</style>
+<div class="sc">
+  <h3>A robot's behaviour is a stack of artifacts — each from a different author</h3>
+  <p class="sub">Every link is a trust decision. Click one to inspect where its trust comes from.</p>
+  <div class="chips" id="chips"></div>
+  <div class="toggle">require signed provenance
+    <button class="tg" id="tg" aria-label="toggle require signed provenance"><span class="knob"></span></button>
+    <span id="tglbl">on</span>
+  </div>
+  <div class="detail" id="detail"></div>
+</div>
+<script>
+(function(){
+  var nodes=[
+    {id:'groot',name:'GR00T foundation model',author:'NVIDIA',prov:'SLSA L3',signed:true,scope:'reasoning · perception',note:'pinned version; not auditable line-by-line — trusted via provenance and identity, not inspection'},
+    {id:'ft',name:'domestic-manipulation fine-tune v4',author:'builder, first-party',prov:'SLSA L2',signed:true,scope:'manipulation policy',note:'derived from the foundation model; provenance chains back to it'},
+    {id:'k',name:'kitchen-tidy skill',author:'builder, first-party',prov:'reviewed',signed:true,scope:'arm + gripper, kitchen zone',note:'in-house skill; reviewed and signed'},
+    {id:'b',name:'barista-latte skill',author:'ThirdPartyCo, marketplace',prov:'SLSA L1',signed:true,scope:'arm + gripper, counter zone',note:'third-party but signed and scoped — admitted with bounded capability'},
+    {id:'p',name:'promo-dance skill',author:'unknown',prov:'none',signed:false,scope:'undeclared',note:'no signature, no provenance — unaccountable'}
+  ];
+  var sel='groot',requireSigned=true;
+  var chips=document.getElementById('chips'),detail=document.getElementById('detail');
+  function status(n){
+    if(n.signed)return 'ok';
+    return requireSigned?'blocked':'risk';
+  }
+  function mk(t,c){var e=document.createElement(t);if(c)e.className=c;return e;}
+  function renderChips(){
+    while(chips.firstChild)chips.removeChild(chips.firstChild);
+    nodes.forEach(function(n,i){
+      var st=status(n);
+      var chip=mk('button','chip'+(n.id===sel?' sel':'')+(st==='blocked'?' blocked':st==='risk'?' risk':''));
+      var dot=mk('span','dot'+(st==='blocked'?' red':st==='risk'?' amber':''));
+      var lbl=mk('span');lbl.textContent=n.name;
+      chip.appendChild(dot);chip.appendChild(lbl);
+      chip.addEventListener('click',function(){sel=n.id;renderChips();renderDetail();});
+      chips.appendChild(chip);
+      if(i<nodes.length-1){var a=mk('span','arrow');a.textContent='→';chips.appendChild(a);}
+    });
+  }
+  function row(k,v){var r=mk('div','row');var kk=mk('span','k');kk.textContent=k;var vv=mk('span');vv.textContent=v;r.appendChild(kk);r.appendChild(vv);return r;}
+  function renderDetail(){
+    var n=nodes.filter(function(x){return x.id===sel;})[0];
+    while(detail.firstChild)detail.removeChild(detail.firstChild);
+    var nm=mk('div','name');nm.textContent=n.name;detail.appendChild(nm);
+    detail.appendChild(row('author / signer',n.author));
+    detail.appendChild(row('provenance',n.prov));
+    detail.appendChild(row('signed manifest',n.signed?'yes':'no'));
+    detail.appendChild(row('declared scope',n.scope));
+    var st=status(n),v=mk('div','verdict '+(st==='ok'?'ok':st==='blocked'?'bad':'warn'));
+    if(st==='ok')v.textContent='admitted — '+n.note;
+    else if(st==='blocked')v.textContent='blocked — '+n.note+'. With signed provenance required, an unaccountable artifact cannot run.';
+    else v.textContent='admitted at risk — '+n.note+'. Provenance is not being required, so this runs unverified.';
+    detail.appendChild(v);
+  }
+  document.getElementById('tg').addEventListener('click',function(){
+    requireSigned=!requireSigned;this.classList.toggle('off',!requireSigned);
+    document.getElementById('tglbl').textContent=requireSigned?'on':'off';
+    renderChips();renderDetail();
+  });
+  renderChips();renderDetail();
+})();
+</script>
+</body>
+</html>
